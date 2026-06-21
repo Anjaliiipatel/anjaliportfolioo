@@ -139,6 +139,31 @@ const experience = [
   },
 ];
 
+const leadership = [
+  {
+    role: "Co-Founder & Vice President",
+    org: "Purdue LeetCode Club",
+    period: "May 2026 – Present",
+    bullets: [
+      "Co-founded Purdue University's LeetCode Club to help students prepare for technical interviews and strengthen data structures and algorithms skills",
+      "Organize coding workshops, technical interview preparation sessions, and collaborative problem-solving events",
+      "Coordinate club operations, member recruitment, and executive board initiatives",
+      "Foster a community focused on software engineering, cybersecurity, and technical career development",
+    ],
+  },
+  {
+    role: "Technology & Logistics Chair",
+    org: "Gujarati Club Association at Purdue",
+    period: "June 2026 – Present",
+    bullets: [
+      "Coordinate event logistics and operational planning for cultural and professional development events",
+      "Manage technology resources and support event execution",
+      "Guide committee members through event planning, scheduling, and organizational processes",
+      "Track attendance and assist with member engagement initiatives",
+    ],
+  },
+];
+
 function Portfolio() {
   return (
     <div className="min-h-screen">
@@ -155,6 +180,7 @@ function Portfolio() {
             <a href="#about" className="hover:text-primary transition-colors">about</a>
             <a href="#projects" className="hover:text-primary transition-colors">projects</a>
             <a href="#experience" className="hover:text-primary transition-colors">experience</a>
+            <a href="#leadership" className="hover:text-primary transition-colors">leadership</a>
             <a href="#skills" className="hover:text-primary transition-colors">skills</a>
             <a href="#contact" className="hover:text-primary transition-colors">contact</a>
           </div>
@@ -382,6 +408,34 @@ function Portfolio() {
           {experience.map((e) => (
             <div
               key={e.role}
+              className="p-6 rounded-xl border border-border bg-surface hover:border-primary/40 transition"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold">{e.role}</h3>
+                  <div className="text-primary font-mono text-sm">{e.org}</div>
+                </div>
+                <span className="text-xs font-mono text-muted-foreground">{e.period}</span>
+              </div>
+              <ul className="space-y-2">
+                {e.bullets.map((b) => (
+                  <li key={b} className="text-sm text-muted-foreground flex gap-2.5">
+                    <span className="text-primary font-mono mt-0.5">▸</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* LEADERSHIP */}
+      <Section id="leadership" label="04" title="Leadership Experience">
+        <div className="space-y-4">
+          {leadership.map((e) => (
+            <div
+              key={e.role + e.org}
               className="p-6 rounded-xl border border-border bg-surface hover:border-primary/40 transition"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
