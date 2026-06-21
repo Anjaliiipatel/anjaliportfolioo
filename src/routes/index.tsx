@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight } from "lucide-react";
+import headshot from "@/assets/headshot.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
