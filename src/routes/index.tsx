@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
+import resumePdf from "@/assets/resume.pdf.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
 
 export const Route = createFileRoute("/")({
