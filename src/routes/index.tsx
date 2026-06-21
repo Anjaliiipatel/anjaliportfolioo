@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight } from "lucide-react";
+import headshot from "@/assets/headshot.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -144,7 +145,8 @@ function Portfolio() {
 
       {/* HERO */}
       <section id="top" className="relative bg-hero">
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32">
+        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-16 items-center">
+          <div>
           <div className="font-mono text-xs text-primary mb-6 flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-primary glow" />
             <span>STATUS: Available for Summer 2027 internships</span>
@@ -207,6 +209,24 @@ function Portfolio() {
                 <div className="text-sm text-muted-foreground">{r.sub}</div>
               </div>
             ))}
+          </div>
+          </div>
+
+          {/* Headshot */}
+          <div className="relative mx-auto lg:mx-0 w-full max-w-sm">
+            <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl rounded-full" />
+            <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/40 shadow-card glow">
+              <img
+                src={headshot.url}
+                alt="Anjali Patel headshot"
+                className="w-full h-full object-cover"
+                loading="eager"
+              />
+              <div className="absolute inset-0 ring-1 ring-inset ring-primary/20 rounded-2xl pointer-events-none" />
+            </div>
+            <div className="mt-4 font-mono text-xs text-muted-foreground text-center lg:text-left">
+              <span className="text-primary">$</span> whoami → anjali.patel
+            </div>
           </div>
         </div>
       </section>
