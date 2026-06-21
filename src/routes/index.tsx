@@ -302,13 +302,26 @@ function Portfolio() {
             >
               <Linkedin className="w-4 h-4" /> LinkedIn
             </a>
-            <a
-              href={resumePdf.url}
-              download="Anjali_Patel_Resume.pdf"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
-            >
-              <FileText className="w-4 h-4" /> Resume
-            </a>
+            <div className="inline-flex rounded-md border border-border bg-surface overflow-hidden hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300">
+              <a
+                href={resumePdf.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 hover:text-primary transition-colors"
+              >
+                <FileText className="w-4 h-4" /> View Resume
+              </a>
+              <span className="w-px bg-border" />
+              <a
+                href={resumePdf.url}
+                download="Anjali_Patel_Resume.pdf"
+                aria-label="Download resume"
+                title="Download resume"
+                className="inline-flex items-center px-3 hover:text-primary transition-colors"
+              >
+                <ArrowUpRight className="w-4 h-4 rotate-90" />
+              </a>
+            </div>
           </div>
 
           {/* Current roles strip */}
