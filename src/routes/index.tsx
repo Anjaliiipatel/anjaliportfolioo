@@ -145,7 +145,8 @@ function Portfolio() {
 
       {/* HERO */}
       <section id="top" className="relative bg-hero">
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32">
+        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-16 items-center">
+          <div>
           <div className="font-mono text-xs text-primary mb-6 flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-primary glow" />
             <span>STATUS: Available for Summer 2027 internships</span>
