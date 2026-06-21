@@ -459,7 +459,7 @@ function Portfolio() {
       </Section>
 
       {/* SKILLS */}
-      <Section id="skills" label="04" title="Technical Skills">
+      <Section id="skills" label="05" title="Technical Skills">
         <div className="grid sm:grid-cols-2 gap-5">
           {Object.entries(skills).map(([category, items]) => (
             <div key={category} className="p-6 rounded-xl border border-border bg-surface">
@@ -482,7 +482,7 @@ function Portfolio() {
       </Section>
 
       {/* CONTACT */}
-      <Section id="contact" label="05" title="Let's Connect">
+      <Section id="contact" label="06" title="Let's Connect">
         <div className="rounded-2xl border border-border bg-surface p-10 md:p-14 text-center shadow-card relative overflow-hidden">
           <div className="absolute inset-0 bg-hero opacity-60 pointer-events-none" />
           <div className="relative">
