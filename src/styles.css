@@ -104,13 +104,14 @@
   }
 
   body {
-    background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    background-color: var(--color-background);
     background-image:
       linear-gradient(var(--color-grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-    background-size: 48px 48px;
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(160deg, oklch(0.28 0.12 295) 0%, oklch(0.2 0.07 280) 45%, oklch(0.24 0.08 235) 100%);
+    background-size: 48px 48px, 48px 48px, 100% 100%;
     background-attachment: fixed;
   }
 
