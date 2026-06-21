@@ -302,6 +302,13 @@ function Portfolio() {
             >
               <Linkedin className="w-4 h-4" /> LinkedIn
             </a>
+            <a
+              href={resumePdf.url}
+              download="Anjali_Patel_Resume.pdf"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <FileText className="w-4 h-4" /> Resume
+            </a>
           </div>
 
           {/* Current roles strip */}
