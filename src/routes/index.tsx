@@ -105,6 +105,8 @@ const skills = {
     "VS Code",
     "Postman",
     "Jupyter Notebook",
+    "Nmap",
+    "Splunk",
   ],
   "Cloud & Infrastructure": [
     "AWS",
