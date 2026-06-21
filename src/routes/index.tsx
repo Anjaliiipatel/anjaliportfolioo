@@ -323,8 +323,8 @@ function Portfolio() {
                   <Lock className="w-3 h-3 text-primary" /> CompTIA Security+
                   <span className="text-muted-foreground text-xs">(in progress)</span>
                 </div>
-                <div className="text-muted-foreground text-xs ml-5">+ AWS Security Specialty (planned)</div>
-                <div className="text-muted-foreground text-xs ml-5">+ Microsoft Security (planned)</div>
+                <div className="text-muted-foreground text-xs ml-5">+ AWS Certified Cloud Practitioner (in progress)</div>
+                <div className="text-muted-foreground text-xs ml-5">+ Microsoft AZ-900 Azure Fundamentals (in progress)</div>
               </div>
             </div>
           </div>
