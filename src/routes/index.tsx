@@ -210,6 +210,24 @@ function Portfolio() {
               </div>
             ))}
           </div>
+          </div>
+
+          {/* Headshot */}
+          <div className="relative mx-auto lg:mx-0 w-full max-w-sm">
+            <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl rounded-full" />
+            <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/40 shadow-card glow">
+              <img
+                src={headshot.url}
+                alt="Anjali Patel headshot"
+                className="w-full h-full object-cover"
+                loading="eager"
+              />
+              <div className="absolute inset-0 ring-1 ring-inset ring-primary/20 rounded-2xl pointer-events-none" />
+            </div>
+            <div className="mt-4 font-mono text-xs text-muted-foreground text-center lg:text-left">
+              <span className="text-primary">$</span> whoami → anjali.patel
+            </div>
+          </div>
         </div>
       </section>
 
