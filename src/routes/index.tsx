@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
+import resumePdf from "@/assets/resume.pdf.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
 
 export const Route = createFileRoute("/")({
@@ -300,6 +301,13 @@ function Portfolio() {
               className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <Linkedin className="w-4 h-4" /> LinkedIn
+            </a>
+            <a
+              href={resumePdf.url}
+              download="Anjali_Patel_Resume.pdf"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <FileText className="w-4 h-4" /> Resume
             </a>
           </div>
 
