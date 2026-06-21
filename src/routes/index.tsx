@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
+import { useReveal } from "@/hooks/use-reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -144,25 +146,42 @@ function Portfolio() {
       </header>
 
       {/* HERO */}
-      <section id="top" className="relative bg-hero">
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-16 items-center">
-          <div>
+      <section id="top" className="relative bg-hero overflow-hidden">
+        <FloatingOrbs />
+        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-16 items-center relative">
+          <div style={{ animation: "reveal-up 800ms cubic-bezier(0.22,1,0.36,1) both" }}>
           <div className="font-mono text-xs text-primary mb-6 flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-primary glow" />
+            <span className="relative inline-flex">
+              <span className="inline-block w-2 h-2 rounded-full bg-primary" />
+              <span className="absolute inset-0 rounded-full pulse-ring" />
+            </span>
             <span>STATUS: Available for Summer 2027 internships</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] max-w-4xl">
             <span className="text-gradient">Anjali Patel</span>
           </h1>
-          <p className="mt-6 text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed">
+          <p
+            className="mt-6 text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed"
+            style={{ animation: "reveal-up 900ms 120ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
             Cybersecurity & security engineering student building practical defenses across{" "}
             <span className="text-foreground">cloud</span>,{" "}
             <span className="text-foreground">endpoints</span>, and{" "}
             <span className="text-foreground">industrial control systems</span>.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground">
+          <div
+            className="mt-8 font-mono text-sm text-muted-foreground"
+            style={{ animation: "reveal-up 900ms 220ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
+            <span className="text-primary">$</span> <TypeLine text="locate anjali --role security-engineer" />
+          </div>
+
+          <div
+            className="mt-6 flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground"
+            style={{ animation: "reveal-up 900ms 320ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-primary" /> Purdue University
             </span>
@@ -172,18 +191,21 @@ function Portfolio() {
             <span>Minor in Criminology</span>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div
+            className="mt-10 flex flex-wrap gap-3"
+            style={{ animation: "reveal-up 900ms 420ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
             <a
               href="#projects"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition glow"
+              className="group inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition glow hover:-translate-y-0.5 duration-300"
             >
-              <Terminal className="w-4 h-4" /> View Projects
+              <Terminal className="w-4 h-4 transition-transform group-hover:rotate-12" /> View Projects
             </a>
             <a
               href="https://github.com/Anjaliiipatel"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 transition"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <Github className="w-4 h-4" /> GitHub
             </a>
@@ -191,7 +213,7 @@ function Portfolio() {
               href="https://www.linkedin.com/in/anjali-patelll/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 transition"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <Linkedin className="w-4 h-4" /> LinkedIn
             </a>
@@ -202,8 +224,12 @@ function Portfolio() {
             {[
               { label: "Currently @", value: "Rolls-Royce", sub: "Systems Security Engineering Intern" },
               { label: "Apprentice @", value: "UpToStudy", sub: "Cybersecurity Apprentice" },
-            ].map((r) => (
-              <div key={r.value} className="p-5 rounded-lg border border-border bg-surface/60 backdrop-blur shadow-card">
+            ].map((r, i) => (
+              <div
+                key={r.value}
+                className="p-5 rounded-lg border border-border bg-surface/60 backdrop-blur shadow-card hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
+                style={{ animation: `reveal-up 900ms ${520 + i * 120}ms cubic-bezier(0.22,1,0.36,1) both` }}
+              >
                 <div className="text-xs font-mono text-primary uppercase tracking-wider">{r.label}</div>
                 <div className="mt-1 text-lg font-semibold">{r.value}</div>
                 <div className="text-sm text-muted-foreground">{r.sub}</div>
@@ -213,19 +239,28 @@ function Portfolio() {
           </div>
 
           {/* Headshot */}
-          <div className="relative mx-auto lg:mx-0 w-full max-w-sm">
+          <div
+            className="relative mx-auto lg:mx-0 w-full max-w-sm float"
+            style={{ animation: "reveal-up 1000ms 200ms cubic-bezier(0.22,1,0.36,1) both, float-y 6s ease-in-out 1s infinite" }}
+          >
             <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl rounded-full" />
-            <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/40 shadow-card glow">
+            <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/40 shadow-card glow group">
               <img
                 src={headshot.url}
                 alt="Anjali Patel headshot"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="eager"
+              />
+              {/* scanline */}
+              <div
+                className="absolute inset-x-0 h-24 pointer-events-none bg-gradient-to-b from-transparent via-primary/20 to-transparent"
+                style={{ animation: "scan 4s linear infinite" }}
               />
               <div className="absolute inset-0 ring-1 ring-inset ring-primary/20 rounded-2xl pointer-events-none" />
             </div>
             <div className="mt-4 font-mono text-xs text-muted-foreground text-center lg:text-left">
               <span className="text-primary">$</span> whoami → anjali.patel
+              <span className="blink-caret text-primary">█</span>
             </div>
           </div>
         </div>
@@ -277,12 +312,12 @@ function Portfolio() {
       {/* PROJECTS */}
       <Section id="projects" label="02" title="Featured Projects">
         <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((p) => {
+          {projects.map((p, idx) => {
             const Icon = p.icon;
             return (
+              <RevealCard key={p.title} delay={idx * 90}>
               <article
-                key={p.title}
-                className="group relative p-6 rounded-xl border border-border bg-surface hover:border-primary/50 transition-all shadow-card hover:-translate-y-0.5"
+                className="group relative h-full p-6 rounded-xl border border-border bg-surface hover:border-primary/50 transition-all duration-300 shadow-card hover:-translate-y-1.5 hover:shadow-[0_20px_50px_-10px_oklch(0.82_0.17_175/0.25)]"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
@@ -313,6 +348,7 @@ function Portfolio() {
                   ))}
                 </div>
               </article>
+              </RevealCard>
             );
           })}
         </div>
@@ -417,15 +453,73 @@ function Section({
   title: string;
   children: React.ReactNode;
 }) {
+  const { ref, visible } = useReveal<HTMLDivElement>();
   return (
     <section id={id} className="max-w-6xl mx-auto px-6 py-24 scroll-mt-20">
-      <div className="flex items-center gap-4 mb-12">
-        <span className="font-mono text-sm text-primary">{label}.</span>
-        <h2 className="text-3xl md:text-4xl font-bold">{title}</h2>
-        <div className="flex-1 h-px bg-border" />
+      <div
+        ref={ref}
+        className="reveal"
+        style={visible ? { opacity: 1, transform: "translateY(0)" } : undefined}
+      >
+        <div className="flex items-center gap-4 mb-12">
+          <span className="font-mono text-sm text-primary">{label}.</span>
+          <h2 className="text-3xl md:text-4xl font-bold">{title}</h2>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+        {children}
       </div>
-      {children}
     </section>
+  );
+}
+
+function RevealCard({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const { ref, visible } = useReveal<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      className="reveal"
+      style={
+        visible
+          ? { opacity: 1, transform: "translateY(0)", transitionDelay: `${delay}ms` }
+          : { transitionDelay: `${delay}ms` }
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
+function TypeLine({ text }: { text: string }) {
+  const [out, setOut] = useState("");
+  useEffect(() => {
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      setOut(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, 38);
+    return () => clearInterval(id);
+  }, [text]);
+  return (
+    <span>
+      {out}
+      <span className="blink-caret text-primary">█</span>
+    </span>
+  );
+}
+
+function FloatingOrbs() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        className="absolute -top-32 -left-20 w-[28rem] h-[28rem] rounded-full bg-primary/10 blur-3xl"
+        style={{ animation: "float-y 9s ease-in-out infinite" }}
+      />
+      <div
+        className="absolute top-40 -right-24 w-[24rem] h-[24rem] rounded-full bg-accent/15 blur-3xl"
+        style={{ animation: "float-y 11s ease-in-out 1.5s infinite" }}
+      />
+    </div>
   );
 }
 
