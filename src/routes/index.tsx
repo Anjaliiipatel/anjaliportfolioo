@@ -115,6 +115,28 @@ const experience = [
       "Produce professional technical security reports",
     ],
   },
+  {
+    role: "LLM Security Researcher",
+    org: "OpenAI Research Project",
+    period: "Feb 2026 – Mar 2026",
+    bullets: [
+      "Evaluated Large Language Model security through adversarial prompt testing and red-team style assessments",
+      "Developed and executed 50+ security-focused test cases analyzing hallucinations, prompt injection, and policy bypass behavior",
+      "Documented security findings and model weaknesses through structured reporting",
+      "Investigated AI safety and secure deployment considerations for generative AI systems",
+    ],
+  },
+  {
+    role: "Undergraduate Researcher",
+    org: "NSWC Crane Division / Purdue Applied Research Institute (PARI)",
+    period: "Aug 2025 – Jan 2026",
+    bullets: [
+      "Collaborated on a generative AI/ML system to synthesize realistic RF environments from Software Defined Radio (SDR) data",
+      "Applied Generative Adversarial Networks (GANs) and diffusion models to RF signal analysis and cyber deception research",
+      "Collected and analyzed real-world RF datasets using low-cost SDR hardware",
+      "Worked alongside Purdue researchers and Department of Defense partners on cybersecurity-focused research initiatives",
+    ],
+  },
 ];
 
 function Portfolio() {
