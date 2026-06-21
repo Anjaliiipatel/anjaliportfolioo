@@ -493,7 +493,7 @@ function Portfolio() {
               Open to Summer 2027 internships
             </h3>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              Interested in collaborating, mentoring, or recruiting? I'd love to hear from you.
+              {"\n"}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <ContactLink href="mailto:anjalipatel0621@gmail.com" icon={Mail} label="Email" />
