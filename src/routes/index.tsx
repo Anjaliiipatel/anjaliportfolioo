@@ -453,15 +453,73 @@ function Section({
   title: string;
   children: React.ReactNode;
 }) {
+  const { ref, visible } = useReveal<HTMLDivElement>();
   return (
     <section id={id} className="max-w-6xl mx-auto px-6 py-24 scroll-mt-20">
-      <div className="flex items-center gap-4 mb-12">
-        <span className="font-mono text-sm text-primary">{label}.</span>
-        <h2 className="text-3xl md:text-4xl font-bold">{title}</h2>
-        <div className="flex-1 h-px bg-border" />
+      <div
+        ref={ref}
+        className="reveal"
+        style={visible ? { opacity: 1, transform: "translateY(0)" } : undefined}
+      >
+        <div className="flex items-center gap-4 mb-12">
+          <span className="font-mono text-sm text-primary">{label}.</span>
+          <h2 className="text-3xl md:text-4xl font-bold">{title}</h2>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+        {children}
       </div>
-      {children}
     </section>
+  );
+}
+
+function RevealCard({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const { ref, visible } = useReveal<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      className="reveal"
+      style={
+        visible
+          ? { opacity: 1, transform: "translateY(0)", transitionDelay: `${delay}ms` }
+          : { transitionDelay: `${delay}ms` }
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
+function TypeLine({ text }: { text: string }) {
+  const [out, setOut] = useState("");
+  useEffect(() => {
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      setOut(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, 38);
+    return () => clearInterval(id);
+  }, [text]);
+  return (
+    <span>
+      {out}
+      <span className="blink-caret text-primary">█</span>
+    </span>
+  );
+}
+
+function FloatingOrbs() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        className="absolute -top-32 -left-20 w-[28rem] h-[28rem] rounded-full bg-primary/10 blur-3xl"
+        style={{ animation: "float-y 9s ease-in-out infinite" }}
+      />
+      <div
+        className="absolute top-40 -right-24 w-[24rem] h-[24rem] rounded-full bg-accent/15 blur-3xl"
+        style={{ animation: "float-y 11s ease-in-out 1.5s infinite" }}
+      />
+    </div>
   );
 }
 
