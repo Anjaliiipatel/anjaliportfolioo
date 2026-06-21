@@ -348,6 +348,7 @@ function Portfolio() {
                   ))}
                 </div>
               </article>
+              </RevealCard>
             );
           })}
         </div>
