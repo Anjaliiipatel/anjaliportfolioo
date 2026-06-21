@@ -312,12 +312,12 @@ function Portfolio() {
       {/* PROJECTS */}
       <Section id="projects" label="02" title="Featured Projects">
         <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((p) => {
+          {projects.map((p, idx) => {
             const Icon = p.icon;
             return (
+              <RevealCard key={p.title} delay={idx * 90}>
               <article
-                key={p.title}
-                className="group relative p-6 rounded-xl border border-border bg-surface hover:border-primary/50 transition-all shadow-card hover:-translate-y-0.5"
+                className="group relative h-full p-6 rounded-xl border border-border bg-surface hover:border-primary/50 transition-all duration-300 shadow-card hover:-translate-y-1.5 hover:shadow-[0_20px_50px_-10px_oklch(0.82_0.17_175/0.25)]"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
