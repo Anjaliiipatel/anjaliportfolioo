@@ -403,7 +403,7 @@ function Portfolio() {
       </Section>
 
       {/* EXPERIENCE */}
-      <Section id="experience" label="03" title="Experience">
+      <Section id="experience" label="03" title="Technical Experience">
         <div className="space-y-4">
           {experience.map((e) => (
             <div
