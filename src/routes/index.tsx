@@ -146,25 +146,42 @@ function Portfolio() {
       </header>
 
       {/* HERO */}
-      <section id="top" className="relative bg-hero">
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-16 items-center">
-          <div>
+      <section id="top" className="relative bg-hero overflow-hidden">
+        <FloatingOrbs />
+        <div className="max-w-6xl mx-auto px-6 pt-24 pb-32 grid lg:grid-cols-[1.6fr_1fr] gap-12 lg:gap-16 items-center relative">
+          <div style={{ animation: "reveal-up 800ms cubic-bezier(0.22,1,0.36,1) both" }}>
           <div className="font-mono text-xs text-primary mb-6 flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-primary glow" />
+            <span className="relative inline-flex">
+              <span className="inline-block w-2 h-2 rounded-full bg-primary" />
+              <span className="absolute inset-0 rounded-full pulse-ring" />
+            </span>
             <span>STATUS: Available for Summer 2027 internships</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] max-w-4xl">
             <span className="text-gradient">Anjali Patel</span>
           </h1>
-          <p className="mt-6 text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed">
+          <p
+            className="mt-6 text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed"
+            style={{ animation: "reveal-up 900ms 120ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
             Cybersecurity & security engineering student building practical defenses across{" "}
             <span className="text-foreground">cloud</span>,{" "}
             <span className="text-foreground">endpoints</span>, and{" "}
             <span className="text-foreground">industrial control systems</span>.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground">
+          <div
+            className="mt-8 font-mono text-sm text-muted-foreground"
+            style={{ animation: "reveal-up 900ms 220ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
+            <span className="text-primary">$</span> <TypeLine text="locate anjali --role security-engineer" />
+          </div>
+
+          <div
+            className="mt-6 flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground"
+            style={{ animation: "reveal-up 900ms 320ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-primary" /> Purdue University
             </span>
@@ -174,18 +191,21 @@ function Portfolio() {
             <span>Minor in Criminology</span>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div
+            className="mt-10 flex flex-wrap gap-3"
+            style={{ animation: "reveal-up 900ms 420ms cubic-bezier(0.22,1,0.36,1) both" }}
+          >
             <a
               href="#projects"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition glow"
+              className="group inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition glow hover:-translate-y-0.5 duration-300"
             >
-              <Terminal className="w-4 h-4" /> View Projects
+              <Terminal className="w-4 h-4 transition-transform group-hover:rotate-12" /> View Projects
             </a>
             <a
               href="https://github.com/Anjaliiipatel"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 transition"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <Github className="w-4 h-4" /> GitHub
             </a>
@@ -193,7 +213,7 @@ function Portfolio() {
               href="https://www.linkedin.com/in/anjali-patelll/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 transition"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-md border border-border bg-surface hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <Linkedin className="w-4 h-4" /> LinkedIn
             </a>
@@ -204,8 +224,12 @@ function Portfolio() {
             {[
               { label: "Currently @", value: "Rolls-Royce", sub: "Systems Security Engineering Intern" },
               { label: "Apprentice @", value: "UpToStudy", sub: "Cybersecurity Apprentice" },
-            ].map((r) => (
-              <div key={r.value} className="p-5 rounded-lg border border-border bg-surface/60 backdrop-blur shadow-card">
+            ].map((r, i) => (
+              <div
+                key={r.value}
+                className="p-5 rounded-lg border border-border bg-surface/60 backdrop-blur shadow-card hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
+                style={{ animation: `reveal-up 900ms ${520 + i * 120}ms cubic-bezier(0.22,1,0.36,1) both` }}
+              >
                 <div className="text-xs font-mono text-primary uppercase tracking-wider">{r.label}</div>
                 <div className="mt-1 text-lg font-semibold">{r.value}</div>
                 <div className="text-sm text-muted-foreground">{r.sub}</div>
@@ -215,19 +239,28 @@ function Portfolio() {
           </div>
 
           {/* Headshot */}
-          <div className="relative mx-auto lg:mx-0 w-full max-w-sm">
+          <div
+            className="relative mx-auto lg:mx-0 w-full max-w-sm float"
+            style={{ animation: "reveal-up 1000ms 200ms cubic-bezier(0.22,1,0.36,1) both, float-y 6s ease-in-out 1s infinite" }}
+          >
             <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl rounded-full" />
-            <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/40 shadow-card glow">
+            <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/40 shadow-card glow group">
               <img
                 src={headshot.url}
                 alt="Anjali Patel headshot"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="eager"
+              />
+              {/* scanline */}
+              <div
+                className="absolute inset-x-0 h-24 pointer-events-none bg-gradient-to-b from-transparent via-primary/20 to-transparent"
+                style={{ animation: "scan 4s linear infinite" }}
               />
               <div className="absolute inset-0 ring-1 ring-inset ring-primary/20 rounded-2xl pointer-events-none" />
             </div>
             <div className="mt-4 font-mono text-xs text-muted-foreground text-center lg:text-left">
               <span className="text-primary">$</span> whoami → anjali.patel
+              <span className="blink-caret text-primary">█</span>
             </div>
           </div>
         </div>
