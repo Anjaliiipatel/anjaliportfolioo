@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type AnalyticsSummary = {
   totalViews: number;
@@ -11,11 +12,18 @@ export type AnalyticsSummary = {
 };
 
 export const getAnalyticsSummary = createServerFn({ method: "POST" })
-  .inputValidator((data: { token: string; days?: number }) => data)
-  .handler(async ({ data }): Promise<AnalyticsSummary> => {
-    if (!data.token || data.token !== process.env.ANALYTICS_DASHBOARD_TOKEN) {
-      throw new Error("Unauthorized");
-    }
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { days?: number }) => data)
+  .handler(async ({ data, context }): Promise<AnalyticsSummary> => {
+    // Verify the signed-in user is an admin
+    const { data: roles, error: roleErr } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+    if (roleErr) throw new Error(roleErr.message);
+    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+    if (!isAdmin) throw new Error("Forbidden: admin access required");
+
     const days = Math.min(Math.max(data.days ?? 30, 1), 365);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
