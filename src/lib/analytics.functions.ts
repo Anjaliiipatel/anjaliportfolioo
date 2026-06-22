@@ -58,7 +58,12 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       uniqueVisitors,
       byDay,
       topPaths: bucket(safe.map((r) => r.path)).slice(0, 10).map((x) => ({ path: x.key, views: x.views })),
-      topReferrers: bucket(safe.map((r) => (r.referrer ? new URL(r.referrer).hostname : "direct"))).slice(0, 10).map((x) => ({ referrer: x.key, views: x.views })),
+      topReferrers: bucket(
+        safe.map((r) => {
+          if (!r.referrer) return "direct";
+          try { return new URL(r.referrer).hostname || "direct"; } catch { return "direct"; }
+        }),
+      ).slice(0, 10).map((x) => ({ referrer: x.key, views: x.views })),
       byDevice: bucket(safe.map((r) => r.device)).map((x) => ({ device: x.key, views: x.views })),
       byCountry: bucket(safe.map((r) => r.country)).slice(0, 10).map((x) => ({ country: x.key, views: x.views })),
     };
