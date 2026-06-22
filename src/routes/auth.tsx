@@ -15,7 +15,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const fetchRole = useServerFn(getMyRole);
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,17 +42,8 @@ function AuthPage() {
     setBusy(true);
     setErr(null);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/auth" },
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
       await routeAfterAuth();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Authentication failed");
