@@ -244,17 +244,11 @@ const leadership = [
 ];
 
 function Portfolio() {
-  const [showGate, setShowGate] = useState(true);
-
-  const dismissGate = () => {
-    setShowGate(false);
-  };
-
   return (
     <div className="min-h-screen">
-      {showGate && <VisitorGate onContinue={dismissGate} />}
       {/* NAV */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
+
         <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="#top" className="flex items-center gap-2 font-mono text-sm">
             <Shield className="w-4 h-4 text-primary" />
