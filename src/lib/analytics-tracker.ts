@@ -44,6 +44,45 @@ function detectDevice(): string {
   return "desktop";
 }
 
+function detectBrowser(): string {
+  if (typeof navigator === "undefined") return "unknown";
+  const ua = navigator.userAgent;
+  if (/Edg\//.test(ua)) return "Edge";
+  if (/OPR\/|Opera/.test(ua)) return "Opera";
+  if (/Chrome\//.test(ua) && !/Edg\/|OPR\//.test(ua)) return "Chrome";
+  if (/Firefox\//.test(ua)) return "Firefox";
+  if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) return "Safari";
+  return "Other";
+}
+
+function detectOS(): string {
+  if (typeof navigator === "undefined") return "unknown";
+  const ua = navigator.userAgent;
+  if (/Windows NT/.test(ua)) return "Windows";
+  if (/Mac OS X|Macintosh/.test(ua) && !/Mobile/.test(ua)) return "macOS";
+  if (/iPhone|iPad|iPod/.test(ua)) return "iOS";
+  if (/Android/.test(ua)) return "Android";
+  if (/Linux/.test(ua)) return "Linux";
+  return "Other";
+}
+
+type GeoInfo = { country: string | null; region: string | null; city: string | null };
+
+async function fetchGeo(): Promise<GeoInfo> {
+  try {
+    const res = await fetch("https://ipapi.co/json/", { cache: "force-cache" });
+    if (!res.ok) return { country: null, region: null, city: null };
+    const j = (await res.json()) as { country_name?: string; region?: string; city?: string };
+    return {
+      country: (j.country_name ?? "").slice(0, 128) || null,
+      region: (j.region ?? "").slice(0, 128) || null,
+      city: (j.city ?? "").slice(0, 128) || null,
+    };
+  } catch {
+    return { country: null, region: null, city: null };
+  }
+}
+
 let lastTracked = "";
 
 export async function trackPageView(path: string) {
@@ -54,11 +93,18 @@ export async function trackPageView(path: string) {
   if (key === lastTracked) return;
   lastTracked = key;
 
-  let country: string | null = null;
+  const geo = await fetchGeo();
+
+  const language =
+    typeof navigator !== "undefined" ? (navigator.language || "").slice(0, 32) || null : null;
+  const screen_size =
+    typeof window !== "undefined" && window.screen
+      ? `${window.screen.width}x${window.screen.height}`
+      : null;
+  let timezone: string | null = null;
   try {
-    // Best-effort geolocation; fail silently
-    const res = await fetch("https://ipapi.co/country/", { cache: "force-cache" });
-    if (res.ok) country = (await res.text()).trim().slice(0, 8) || null;
+    timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+    if (timezone) timezone = timezone.slice(0, 64);
   } catch {
     /* ignore */
   }
@@ -67,7 +113,14 @@ export async function trackPageView(path: string) {
     path,
     referrer: document.referrer || null,
     device: detectDevice(),
-    country,
+    browser: detectBrowser(),
+    os: detectOS(),
+    country: geo.country,
+    region: geo.region,
+    city: geo.city,
+    language,
+    screen_size,
+    timezone,
     visitor_hash: getVisitorHash(),
   });
 }
