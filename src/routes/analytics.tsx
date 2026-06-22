@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getAnalyticsSummary, verifyAdminPassword, type AnalyticsSummary } from "@/lib/analytics.functions";
+import { setOwner } from "@/lib/analytics-tracker";
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({ meta: [{ title: "Analytics" }, { name: "robots", content: "noindex" }] }),
@@ -41,6 +42,7 @@ function AnalyticsPage() {
   useEffect(() => {
     const saved = typeof window !== "undefined" ? sessionStorage.getItem(PW_KEY) : null;
     if (saved) {
+      setOwner(true);
       setPassword(saved);
       void load(saved, days);
     }
@@ -58,6 +60,7 @@ function AnalyticsPage() {
         return;
       }
       sessionStorage.setItem(PW_KEY, pwInput);
+      setOwner(true);
       setPassword(pwInput);
       setPwInput("");
       void load(pwInput, days);
@@ -111,8 +114,7 @@ function AnalyticsPage() {
           <div>
             <h1 className="text-3xl font-semibold">Analytics</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Self-hosted page-view stats. Your own visits are excluded via{" "}
-              <a href="/me" className="underline">/me</a>.
+              Self-hosted page-view stats. Your own visits are automatically excluded on this device.
             </p>
           </div>
           <div className="flex items-center gap-2">
