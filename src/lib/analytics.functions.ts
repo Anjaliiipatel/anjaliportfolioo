@@ -1,6 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type RecentVisit = {
+  created_at: string;
+  path: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  device: string | null;
+  browser: string | null;
+  os: string | null;
+  referrer: string | null;
+  timezone: string | null;
+};
+
 export type AnalyticsSummary = {
   totalViews: number;
   uniqueVisitors: number;
@@ -8,7 +21,14 @@ export type AnalyticsSummary = {
   topPaths: Array<{ path: string; views: number }>;
   topReferrers: Array<{ referrer: string; views: number }>;
   byDevice: Array<{ device: string; views: number }>;
+  byBrowser: Array<{ browser: string; views: number }>;
+  byOS: Array<{ os: string; views: number }>;
   byCountry: Array<{ country: string; views: number }>;
+  byLocation: Array<{ location: string; views: number }>;
+  byLanguage: Array<{ language: string; views: number }>;
+  byTimezone: Array<{ timezone: string; views: number }>;
+  byHour: Array<{ hour: number; views: number }>;
+  recent: RecentVisit[];
 };
 
 export const getAnalyticsSummary = createServerFn({ method: "POST" })
@@ -30,8 +50,11 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
 
     const { data: rows, error } = await supabaseAdmin
       .from("page_views")
-      .select("path,referrer,device,country,visitor_hash,created_at")
+      .select(
+        "path,referrer,device,browser,os,country,region,city,language,screen_size,timezone,visitor_hash,created_at",
+      )
       .gte("created_at", since)
+      .order("created_at", { ascending: false })
       .limit(50000);
     if (error) throw new Error(error.message);
 
@@ -53,18 +76,36 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
     };
 
     const dayMap = new Map<string, number>();
+    const hourMap = new Map<number, number>();
     for (const r of safe) {
-      const d = (r.created_at as string).slice(0, 10);
-      dayMap.set(d, (dayMap.get(d) ?? 0) + 1);
+      const ts = r.created_at as string;
+      dayMap.set(ts.slice(0, 10), (dayMap.get(ts.slice(0, 10)) ?? 0) + 1);
+      const h = new Date(ts).getHours();
+      hourMap.set(h, (hourMap.get(h) ?? 0) + 1);
     }
     const byDay = [...dayMap.entries()]
       .sort((a, b) => (a[0] < b[0] ? -1 : 1))
       .map(([day, views]) => ({ day, views }));
+    const byHour = Array.from({ length: 24 }, (_, h) => ({ hour: h, views: hourMap.get(h) ?? 0 }));
+
+    const recent: RecentVisit[] = safe.slice(0, 50).map((r) => ({
+      created_at: r.created_at as string,
+      path: r.path as string,
+      city: (r.city as string | null) ?? null,
+      region: (r.region as string | null) ?? null,
+      country: (r.country as string | null) ?? null,
+      device: (r.device as string | null) ?? null,
+      browser: (r.browser as string | null) ?? null,
+      os: (r.os as string | null) ?? null,
+      referrer: (r.referrer as string | null) ?? null,
+      timezone: (r.timezone as string | null) ?? null,
+    }));
 
     return {
       totalViews,
       uniqueVisitors,
       byDay,
+      byHour,
       topPaths: bucket(safe.map((r) => r.path)).slice(0, 10).map((x) => ({ path: x.key, views: x.views })),
       topReferrers: bucket(
         safe.map((r) => {
@@ -73,6 +114,20 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
         }),
       ).slice(0, 10).map((x) => ({ referrer: x.key, views: x.views })),
       byDevice: bucket(safe.map((r) => r.device)).map((x) => ({ device: x.key, views: x.views })),
+      byBrowser: bucket(safe.map((r) => r.browser)).map((x) => ({ browser: x.key, views: x.views })),
+      byOS: bucket(safe.map((r) => r.os)).map((x) => ({ os: x.key, views: x.views })),
       byCountry: bucket(safe.map((r) => r.country)).slice(0, 10).map((x) => ({ country: x.key, views: x.views })),
+      byLocation: bucket(
+        safe.map((r) => {
+          const city = (r.city as string | null) || "";
+          const region = (r.region as string | null) || "";
+          const country = (r.country as string | null) || "";
+          const parts = [city, region, country].filter(Boolean);
+          return parts.length ? parts.join(", ") : "unknown";
+        }),
+      ).slice(0, 15).map((x) => ({ location: x.key, views: x.views })),
+      byLanguage: bucket(safe.map((r) => r.language)).slice(0, 10).map((x) => ({ language: x.key, views: x.views })),
+      byTimezone: bucket(safe.map((r) => r.timezone)).slice(0, 10).map((x) => ({ timezone: x.key, views: x.views })),
+      recent,
     };
   });
