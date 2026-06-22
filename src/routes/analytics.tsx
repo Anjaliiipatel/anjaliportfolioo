@@ -60,6 +60,7 @@ function AnalyticsPage() {
         return;
       }
       sessionStorage.setItem(PW_KEY, pwInput);
+      setOwner(true);
       setPassword(pwInput);
       setPwInput("");
       void load(pwInput, days);
