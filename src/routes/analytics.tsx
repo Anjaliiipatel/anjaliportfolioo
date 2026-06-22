@@ -1,27 +1,34 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
-import { getAnalyticsSummary, type AnalyticsSummary } from "@/lib/analytics.functions";
+import { getAnalyticsSummary, verifyAdminPassword, type AnalyticsSummary } from "@/lib/analytics.functions";
 
-export const Route = createFileRoute("/_authenticated/analytics")({
+export const Route = createFileRoute("/analytics")({
   head: () => ({ meta: [{ title: "Analytics" }, { name: "robots", content: "noindex" }] }),
   component: AnalyticsPage,
 });
 
+const PW_KEY = "analytics_pw";
+
 function AnalyticsPage() {
   const fetchSummary = useServerFn(getAnalyticsSummary);
-  const navigate = useNavigate();
+  const verify = useServerFn(verifyAdminPassword);
+
+  const [password, setPassword] = useState<string | null>(null);
+  const [pwInput, setPwInput] = useState("");
+  const [unlocking, setUnlocking] = useState(false);
+  const [unlockErr, setUnlockErr] = useState<string | null>(null);
+
   const [days, setDays] = useState(30);
   const [data, setData] = useState<AnalyticsSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  async function load(d: number) {
+  async function load(pw: string, d: number) {
     setLoading(true);
     setErr(null);
     try {
-      const res = await fetchSummary({ data: { days: d } });
+      const res = await fetchSummary({ data: { password: pw, days: d } });
       setData(res);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load");
@@ -32,13 +39,69 @@ function AnalyticsPage() {
   }
 
   useEffect(() => {
-    void load(days);
+    const saved = typeof window !== "undefined" ? sessionStorage.getItem(PW_KEY) : null;
+    if (saved) {
+      setPassword(saved);
+      void load(saved, days);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+  async function handleUnlock(e: React.FormEvent) {
+    e.preventDefault();
+    setUnlocking(true);
+    setUnlockErr(null);
+    try {
+      const { ok } = await verify({ data: { password: pwInput } });
+      if (!ok) {
+        setUnlockErr("Incorrect password.");
+        return;
+      }
+      sessionStorage.setItem(PW_KEY, pwInput);
+      setPassword(pwInput);
+      setPwInput("");
+      void load(pwInput, days);
+    } catch (e) {
+      setUnlockErr(e instanceof Error ? e.message : "Verification failed");
+    } finally {
+      setUnlocking(false);
+    }
+  }
+
+  function handleLock() {
+    sessionStorage.removeItem(PW_KEY);
+    setPassword(null);
+    setData(null);
+  }
+
+  if (!password) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
+        <form onSubmit={handleUnlock} className="w-full max-w-sm space-y-4 rounded-lg border border-border p-6">
+          <div>
+            <h1 className="text-2xl font-semibold">Enter password</h1>
+            <p className="text-sm text-muted-foreground mt-1">Private analytics. Owner only.</p>
+          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            autoFocus
+            required
+            value={pwInput}
+            onChange={(e) => setPwInput(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
+          {unlockErr && <div className="text-sm text-destructive">{unlockErr}</div>}
+          <button
+            type="submit"
+            disabled={unlocking}
+            className="w-full rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
+          >
+            {unlocking ? "Checking…" : "Unlock"}
+          </button>
+        </form>
+      </div>
+    );
   }
 
   return (
@@ -58,7 +121,7 @@ function AnalyticsPage() {
               onChange={(e) => {
                 const d = Number(e.target.value);
                 setDays(d);
-                void load(d);
+                void load(password, d);
               }}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -69,10 +132,10 @@ function AnalyticsPage() {
             </select>
             <button
               type="button"
-              onClick={handleSignOut}
+              onClick={handleLock}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
             >
-              Sign out
+              Lock
             </button>
           </div>
         </header>
@@ -238,10 +301,7 @@ function RankList({ items }: { items: Array<{ label: string; value: number }> })
             <span className="tabular-nums text-muted-foreground">{i.value}</span>
           </div>
           <div className="h-1.5 bg-muted rounded mt-1 overflow-hidden">
-            <div
-              className="h-full bg-primary"
-              style={{ width: `${(i.value / max) * 100}%` }}
-            />
+            <div className="h-full bg-primary" style={{ width: `${(i.value / max) * 100}%` }} />
           </div>
         </li>
       ))}
@@ -256,10 +316,7 @@ function DayChart({ data }: { data: Array<{ day: string; views: number }> }) {
     <div className="flex items-end gap-1 h-32">
       {data.map((d) => (
         <div key={d.day} className="flex-1 flex flex-col items-center gap-1" title={`${d.day}: ${d.views}`}>
-          <div
-            className="w-full bg-primary rounded-t"
-            style={{ height: `${(d.views / max) * 100}%`, minHeight: 2 }}
-          />
+          <div className="w-full bg-primary rounded-t" style={{ height: `${(d.views / max) * 100}%`, minHeight: 2 }} />
         </div>
       ))}
     </div>

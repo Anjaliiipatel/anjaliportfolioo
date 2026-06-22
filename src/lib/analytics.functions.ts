@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type RecentVisit = {
   created_at: string;
@@ -31,18 +30,28 @@ export type AnalyticsSummary = {
   recent: RecentVisit[];
 };
 
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+export const verifyAdminPassword = createServerFn({ method: "POST" })
+  .inputValidator((data: { password: string }) => data)
+  .handler(async ({ data }): Promise<{ ok: boolean }> => {
+    const expected = process.env.ANALYTICS_DASHBOARD_TOKEN ?? "";
+    if (!expected) throw new Error("Admin password is not configured.");
+    return { ok: timingSafeEqual(String(data.password ?? ""), expected) };
+  });
+
 export const getAnalyticsSummary = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data: { days?: number }) => data)
-  .handler(async ({ data, context }): Promise<AnalyticsSummary> => {
-    // Verify the signed-in user is an admin
-    const { data: roles, error: roleErr } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId);
-    if (roleErr) throw new Error(roleErr.message);
-    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
-    if (!isAdmin) throw new Error("Forbidden: admin access required");
+  .inputValidator((data: { password: string; days?: number }) => data)
+  .handler(async ({ data }): Promise<AnalyticsSummary> => {
+    const expected = process.env.ANALYTICS_DASHBOARD_TOKEN ?? "";
+    if (!expected || !timingSafeEqual(String(data.password ?? ""), expected)) {
+      throw new Error("Incorrect password.");
+    }
 
     const days = Math.min(Math.max(data.days ?? 30, 1), 365);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
