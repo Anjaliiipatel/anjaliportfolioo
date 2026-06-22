@@ -207,12 +207,6 @@ function RecentTable({ rows }: { rows: Array<{
     </div>
   );
 }
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
