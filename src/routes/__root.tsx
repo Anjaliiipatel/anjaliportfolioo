@@ -118,6 +118,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    let cancelled = false;
+    const fire = () => {
+      if (cancelled) return;
+      const path = router.state.location.pathname;
+      // lazy import to keep SSR clean
+      import("../lib/analytics-tracker").then(({ trackPageView }) => {
+        if (!cancelled) void trackPageView(path);
+      });
+    };
+    fire();
+    const unsub = router.subscribe("onResolved", fire);
+    return () => {
+      cancelled = true;
+      unsub();
+    };
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>
