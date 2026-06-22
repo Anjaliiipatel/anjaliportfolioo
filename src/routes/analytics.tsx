@@ -114,8 +114,7 @@ function AnalyticsPage() {
           <div>
             <h1 className="text-3xl font-semibold">Analytics</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Self-hosted page-view stats. Your own visits are excluded via{" "}
-              <a href="/me" className="underline">/me</a>.
+              Self-hosted page-view stats. Your own visits are automatically excluded on this device.
             </p>
           </div>
           <div className="flex items-center gap-2">
