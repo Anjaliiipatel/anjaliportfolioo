@@ -244,16 +244,9 @@ const leadership = [
 ];
 
 function Portfolio() {
-  const [showGate, setShowGate] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const acknowledged = sessionStorage.getItem(GATE_KEY) === "1";
-    if (!acknowledged) setShowGate(true);
-  }, []);
+  const [showGate, setShowGate] = useState(true);
 
   const dismissGate = () => {
-    sessionStorage.setItem(GATE_KEY, "1");
     setShowGate(false);
   };
 
