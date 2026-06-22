@@ -74,7 +74,7 @@ function AuthPage() {
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6 rounded-lg border border-border p-6">
         <div>
-          <h1 className="text-2xl font-semibold">{mode === "signin" ? "Sign in" : "Create account"}</h1>
+          <h1 className="text-2xl font-semibold">Owner sign in</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Admin access only. Visitors don't need an account to view the portfolio.
           </p>
@@ -118,17 +118,9 @@ function AuthPage() {
             disabled={busy}
             className="w-full rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
           >
-            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+            {busy ? "Please wait…" : "Sign in"}
           </button>
         </form>
-
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="w-full text-xs text-muted-foreground hover:text-foreground"
-        >
-          {mode === "signin" ? "Don't have an account? Create one" : "Already have an account? Sign in"}
-        </button>
       </div>
     </div>
   );
