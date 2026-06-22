@@ -98,6 +98,10 @@ function AnalyticsPage() {
               <DayChart data={data.byDay} />
             </Section>
 
+            <Section title="Visitor locations (city, region, country)">
+              <RankList items={data.byLocation.map((p) => ({ label: p.location, value: p.views }))} />
+            </Section>
+
             <div className="grid md:grid-cols-2 gap-6">
               <Section title="Top pages">
                 <RankList items={data.topPaths.map((p) => ({ label: p.path, value: p.views }))} />
@@ -105,13 +109,104 @@ function AnalyticsPage() {
               <Section title="Top referrers">
                 <RankList items={data.topReferrers.map((p) => ({ label: p.referrer, value: p.views }))} />
               </Section>
-              <Section title="Devices">
-                <RankList items={data.byDevice.map((p) => ({ label: p.device, value: p.views }))} />
-              </Section>
               <Section title="Countries">
                 <RankList items={data.byCountry.map((p) => ({ label: p.country, value: p.views }))} />
               </Section>
+              <Section title="Timezones">
+                <RankList items={data.byTimezone.map((p) => ({ label: p.timezone, value: p.views }))} />
+              </Section>
+              <Section title="Devices">
+                <RankList items={data.byDevice.map((p) => ({ label: p.device, value: p.views }))} />
+              </Section>
+              <Section title="Browsers">
+                <RankList items={data.byBrowser.map((p) => ({ label: p.browser, value: p.views }))} />
+              </Section>
+              <Section title="Operating systems">
+                <RankList items={data.byOS.map((p) => ({ label: p.os, value: p.views }))} />
+              </Section>
+              <Section title="Languages">
+                <RankList items={data.byLanguage.map((p) => ({ label: p.language, value: p.views }))} />
+              </Section>
             </div>
+
+            <Section title="Views by hour of day (your server time)">
+              <HourChart data={data.byHour} />
+            </Section>
+
+            <Section title="Recent visits">
+              <RecentTable rows={data.recent} />
+            </Section>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HourChart({ data }: { data: Array<{ hour: number; views: number }> }) {
+  const max = Math.max(...data.map((d) => d.views), 1);
+  return (
+    <div className="flex items-end gap-1 h-24">
+      {data.map((d) => (
+        <div key={d.hour} className="flex-1 flex flex-col items-center gap-1" title={`${d.hour}:00 — ${d.views}`}>
+          <div className="w-full bg-primary rounded-t" style={{ height: `${(d.views / max) * 100}%`, minHeight: 2 }} />
+          <div className="text-[10px] text-muted-foreground tabular-nums">{d.hour}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RecentTable({ rows }: { rows: Array<{
+  created_at: string;
+  path: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  device: string | null;
+  browser: string | null;
+  os: string | null;
+  referrer: string | null;
+}> }) {
+  if (rows.length === 0) return <div className="text-sm text-muted-foreground">No visits yet</div>;
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left text-xs uppercase text-muted-foreground">
+            <th className="py-2 pr-3 font-medium">When</th>
+            <th className="py-2 pr-3 font-medium">Page</th>
+            <th className="py-2 pr-3 font-medium">Location</th>
+            <th className="py-2 pr-3 font-medium">Device</th>
+            <th className="py-2 pr-3 font-medium">Browser</th>
+            <th className="py-2 pr-3 font-medium">OS</th>
+            <th className="py-2 pr-3 font-medium">Referrer</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => {
+            const loc = [r.city, r.region, r.country].filter(Boolean).join(", ") || "—";
+            const ref = (() => {
+              if (!r.referrer) return "direct";
+              try { return new URL(r.referrer).hostname; } catch { return r.referrer; }
+            })();
+            return (
+              <tr key={i} className="border-t border-border">
+                <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">{new Date(r.created_at).toLocaleString()}</td>
+                <td className="py-2 pr-3 truncate max-w-[180px]" title={r.path}>{r.path}</td>
+                <td className="py-2 pr-3">{loc}</td>
+                <td className="py-2 pr-3">{r.device ?? "—"}</td>
+                <td className="py-2 pr-3">{r.browser ?? "—"}</td>
+                <td className="py-2 pr-3">{r.os ?? "—"}</td>
+                <td className="py-2 pr-3 truncate max-w-[140px]" title={r.referrer ?? ""}>{ref}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
           </div>
         )}
       </div>
