@@ -42,6 +42,7 @@ function AnalyticsPage() {
   useEffect(() => {
     const saved = typeof window !== "undefined" ? sessionStorage.getItem(PW_KEY) : null;
     if (saved) {
+      setOwner(true);
       setPassword(saved);
       void load(saved, days);
     }
