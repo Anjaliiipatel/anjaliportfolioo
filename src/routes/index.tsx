@@ -1,9 +1,50 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText, LogIn, User } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
+
+function VisitorGate({ onContinue }: { onContinue: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 space-y-6 shadow-2xl">
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-2">
+            <Shield className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-semibold text-foreground">Welcome</h1>
+          <p className="text-sm text-muted-foreground">
+            Anjali Patel — Cybersecurity Portfolio
+          </p>
+        </div>
+
+        <Link
+          to="/analytics"
+          className="flex items-center justify-center gap-2 w-full rounded-md bg-primary text-primary-foreground px-4 py-3 text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          <LogIn className="w-4 h-4" />
+          Owner sign in
+        </Link>
+
+        <div className="rounded-md border border-border bg-muted/30 p-4 space-y-3">
+          <p className="text-sm text-muted-foreground text-center">
+            Just visiting? Continue as a guest to view the portfolio.
+          </p>
+          <button
+            type="button"
+            onClick={onContinue}
+            className="flex items-center justify-center gap-2 w-full rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium hover:bg-accent transition-colors"
+          >
+            <User className="w-4 h-4" />
+            Continue as guest
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -203,9 +244,12 @@ const leadership = [
 ];
 
 function Portfolio() {
+  const [showGate, setShowGate] = useState(true);
+  if (showGate) return <VisitorGate onContinue={() => setShowGate(false)} />;
   return (
     <div className="min-h-screen">
       {/* NAV */}
+
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
 
         <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
