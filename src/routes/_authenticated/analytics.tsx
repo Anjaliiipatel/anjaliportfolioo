@@ -1,45 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
 import { getAnalyticsSummary, type AnalyticsSummary } from "@/lib/analytics.functions";
 
-export const Route = createFileRoute("/analytics")({
+export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({ meta: [{ title: "Analytics" }, { name: "robots", content: "noindex" }] }),
   component: AnalyticsPage,
 });
 
-const TOKEN_KEY = "lovable_analytics_token";
-
 function AnalyticsPage() {
   const fetchSummary = useServerFn(getAnalyticsSummary);
-  const [token, setToken] = useState("");
+  const navigate = useNavigate();
   const [days, setDays] = useState(30);
   const [data, setData] = useState<AnalyticsSummary | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
-    if (saved) {
-      setToken(saved);
-      void load(saved, days);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function load(t: string, d: number) {
+  async function load(d: number) {
     setLoading(true);
     setErr(null);
     try {
-      const res = await fetchSummary({ data: { token: t, days: d } });
+      const res = await fetchSummary({ data: { days: d } });
       setData(res);
-      localStorage.setItem(TOKEN_KEY, t);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load");
       setData(null);
     } finally {
       setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    void load(days);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
   }
 
   return (
@@ -59,7 +58,7 @@ function AnalyticsPage() {
               onChange={(e) => {
                 const d = Number(e.target.value);
                 setDays(d);
-                if (token) void load(token, d);
+                void load(d);
               }}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -68,30 +67,17 @@ function AnalyticsPage() {
               <option value={90}>Last 90 days</option>
               <option value={365}>Last year</option>
             </select>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
+            >
+              Sign out
+            </button>
           </div>
         </header>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void load(token, days);
-          }}
-          className="flex gap-2"
-        >
-          <input
-            type="password"
-            placeholder="Dashboard access token"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
-          <button
-            type="submit"
-            className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90"
-          >
-            {loading ? "Loading…" : "Load"}
-          </button>
-        </form>
+        {loading && <div className="text-sm text-muted-foreground">Loading…</div>}
 
         {err && (
           <div className="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
