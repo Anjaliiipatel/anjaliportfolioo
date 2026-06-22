@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getAnalyticsSummary, verifyAdminPassword, type AnalyticsSummary } from "@/lib/analytics.functions";
+import { setOwner } from "@/lib/analytics-tracker";
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({ meta: [{ title: "Analytics" }, { name: "robots", content: "noindex" }] }),
