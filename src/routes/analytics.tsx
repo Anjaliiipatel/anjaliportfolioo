@@ -279,12 +279,33 @@ function AnalyticsPage() {
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             </button>
             <button
+              onClick={() => setAutoRefresh((v) => !v)}
+              className={`h-9 px-3 flex items-center gap-1.5 rounded-md border text-xs font-medium transition-colors ${
+                autoRefresh
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15"
+                  : "border-input bg-background hover:bg-accent"
+              }`}
+              title={autoRefresh ? "Pause live updates" : "Resume live updates"}
+            >
+              {autoRefresh ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{autoRefresh ? "Live" : "Paused"}</span>
+            </button>
+            <button
+              onClick={() => password && load(password, days)}
+              disabled={loading}
+              className="h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent disabled:opacity-50"
+              title="Refresh"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
+            <button
               onClick={handleLock}
               className="md:hidden h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent"
               title="Lock"
             >
               <Lock className="h-4 w-4" />
             </button>
+
           </div>
         </header>
 
