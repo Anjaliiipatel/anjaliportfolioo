@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   getAnalyticsSummary,
   verifyAdminPassword,
   type AnalyticsSummary,
+  type RecentVisit,
 } from "@/lib/analytics.functions";
 import { setOwner } from "@/lib/analytics-tracker";
 import {
@@ -20,7 +21,12 @@ import {
   Eye,
   Calendar,
   Clock,
+  Radio,
+  Pause,
+  Play,
+  ArrowUp,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({
@@ -48,19 +54,27 @@ function AnalyticsPage() {
   const [err, setErr] = useState<string | null>(null);
   const [section, setSection] = useState<SectionKey>("overview");
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [newViews, setNewViews] = useState(0);
+  const prevTotalRef = useRef<number | null>(null);
 
-  async function load(pw: string, d: number) {
-    setLoading(true);
+  async function load(pw: string, d: number, opts?: { silent?: boolean }) {
+    if (!opts?.silent) setLoading(true);
     setErr(null);
     try {
       const res = await fetchSummary({ data: { password: pw, days: d } });
+      if (prevTotalRef.current !== null && res.totalViews > prevTotalRef.current) {
+        setNewViews(res.totalViews - prevTotalRef.current);
+        setTimeout(() => setNewViews(0), 4000);
+      }
+      prevTotalRef.current = res.totalViews;
       setData(res);
       setLastUpdated(new Date());
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load");
-      setData(null);
+      if (!opts?.silent) setData(null);
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }
 
@@ -73,6 +87,16 @@ function AnalyticsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-refresh polling
+  useEffect(() => {
+    if (!password || !autoRefresh) return;
+    const id = setInterval(() => {
+      void load(password, days, { silent: true });
+    }, 10000);
+    return () => clearInterval(id);
+  }, [password, autoRefresh, days]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   async function handleUnlock(e: React.FormEvent) {
     e.preventDefault();
@@ -222,7 +246,15 @@ function AnalyticsPage() {
               })}
             </div>
             <h2 className="hidden md:block text-lg font-semibold capitalize">{section}</h2>
+            <LiveBadge active={autoRefresh} />
+            {newViews > 0 && (
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-xs font-medium animate-in fade-in slide-in-from-top-1">
+                <ArrowUp className="h-3 w-3" />
+                {newViews} new
+              </span>
+            )}
           </div>
+
           <div className="flex items-center gap-2">
             <select
               value={days}
@@ -239,6 +271,18 @@ function AnalyticsPage() {
               <option value={365}>Last year</option>
             </select>
             <button
+              onClick={() => setAutoRefresh((v) => !v)}
+              className={`h-9 px-3 flex items-center gap-1.5 rounded-md border text-xs font-medium transition-colors ${
+                autoRefresh
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15"
+                  : "border-input bg-background hover:bg-accent"
+              }`}
+              title={autoRefresh ? "Pause live updates" : "Resume live updates"}
+            >
+              {autoRefresh ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{autoRefresh ? "Live" : "Paused"}</span>
+            </button>
+            <button
               onClick={() => password && load(password, days)}
               disabled={loading}
               className="h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent disabled:opacity-50"
@@ -253,6 +297,7 @@ function AnalyticsPage() {
             >
               <Lock className="h-4 w-4" />
             </button>
+
           </div>
         </header>
 
@@ -305,25 +350,49 @@ function Overview({ data, lastUpdated }: { data: AnalyticsSummary; lastUpdated: 
     { hour: 0, views: 0 },
   );
 
+  const activeNow = useMemo(() => {
+    const cutoff = Date.now() - 5 * 60 * 1000;
+    return data.recent.filter((r) => new Date(r.created_at).getTime() >= cutoff).length;
+  }, [data.recent]);
+  const viewsLastHour = useMemo(() => {
+    const cutoff = Date.now() - 60 * 60 * 1000;
+    return data.recent.filter((r) => new Date(r.created_at).getTime() >= cutoff).length;
+  }, [data.recent]);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Stat label="Total views" value={data.totalViews} icon={Eye} accent />
+        <Stat
+          label="Active now"
+          value={activeNow}
+          sub="last 5 min"
+          icon={Radio}
+          accent
+          pulse={activeNow > 0}
+        />
+        <Stat label="Views last hour" value={viewsLastHour} icon={Activity} />
+        <Stat label="Total views" value={data.totalViews} icon={Eye} />
         <Stat label="Unique visitors" value={data.uniqueVisitors} icon={Users} />
-        <Stat label="Views today" value={todayViews} icon={Calendar} />
-        <Stat label="Last 7 days" value={last7} icon={TrendingUp} />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Stat label="Views today" value={todayViews} icon={Calendar} />
+        <Stat label="Last 7 days" value={last7} icon={TrendingUp} />
         <Stat label="Avg / day" value={avgPerDay} icon={TrendingUp} />
-        <Stat label="Peak day" value={peak.views} sub={peak.day} icon={Calendar} />
         <Stat label="Peak hour" value={peakHour.views} sub={`${peakHour.hour}:00`} icon={Clock} />
-        <Stat label="Countries" value={data.byCountry.length} icon={Globe} />
       </div>
 
-      <Section title="Views per day" subtitle="Trend over selected range">
-        <DayChart data={data.byDay} />
-      </Section>
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Section title="Views per day" subtitle="Trend over selected range">
+            <DayChart data={data.byDay} />
+          </Section>
+        </div>
+        <Section title="Live activity" subtitle="Latest visits, updating in real time">
+          <ActivityTicker rows={data.recent.slice(0, 8)} />
+        </Section>
+      </div>
+
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Section title="Top pages">
@@ -479,24 +548,30 @@ function Stat({
   sub,
   icon: Icon,
   accent,
+  pulse,
 }: {
   label: string;
   value: number | string;
   sub?: string;
   icon?: typeof Eye;
   accent?: boolean;
+  pulse?: boolean;
 }) {
   return (
     <div
-      className={`rounded-lg border p-4 ${
-        accent
-          ? "border-primary/30 bg-primary/5"
-          : "border-border bg-card"
+      className={`relative rounded-lg border p-4 ${
+        accent ? "border-primary/30 bg-primary/5" : "border-border bg-card"
       }`}
     >
+      {pulse && (
+        <span className="absolute top-3 right-3 flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+        </span>
+      )}
       <div className="flex items-center justify-between">
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-        {Icon && (
+        {Icon && !pulse && (
           <div
             className={`h-7 w-7 rounded-md flex items-center justify-center ${
               accent ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
@@ -506,6 +581,7 @@ function Stat({
           </div>
         )}
       </div>
+
       <div className="text-2xl font-semibold mt-2 tabular-nums">
         {typeof value === "number" ? value.toLocaleString() : value}
       </div>
@@ -667,3 +743,102 @@ function RecentTable({
     </div>
   );
 }
+
+/* ---------------- Live components ---------------- */
+
+function LiveBadge({ active }: { active: boolean }) {
+  return (
+    <span
+      className={`hidden sm:inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+        active
+          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          : "bg-muted text-muted-foreground"
+      }`}
+    >
+      <span className="relative flex h-1.5 w-1.5">
+        {active && (
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+        )}
+        <span
+          className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
+            active ? "bg-emerald-500" : "bg-muted-foreground"
+          }`}
+        />
+      </span>
+      {active ? "Live" : "Paused"}
+    </span>
+  );
+}
+
+function relativeTime(iso: string, now: number): string {
+  const diff = Math.max(0, Math.floor((now - new Date(iso).getTime()) / 1000));
+  if (diff < 5) return "just now";
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+function ActivityTicker({ rows }: { rows: RecentVisit[] }) {
+  const [now, setNow] = useState(() => Date.now());
+  const [seen, setSeen] = useState<Set<string>>(() => new Set(rows.map((r) => r.created_at)));
+  const prevTopRef = useRef<string | null>(rows[0]?.created_at ?? null);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const top = rows[0]?.created_at ?? null;
+    if (top && top !== prevTopRef.current) {
+      prevTopRef.current = top;
+      setSeen((prev) => {
+        const next = new Set(prev);
+        rows.forEach((r) => next.add(r.created_at));
+        return next;
+      });
+    }
+  }, [rows]);
+
+  if (rows.length === 0) {
+    return <div className="text-sm text-muted-foreground">Waiting for activity…</div>;
+  }
+
+  return (
+    <ul className="space-y-2 max-h-[18rem] overflow-y-auto pr-1">
+      {rows.map((r) => {
+        const isNew = !seen.has(r.created_at);
+        const loc = [r.city, r.country].filter(Boolean).join(", ");
+        return (
+          <li
+            key={r.created_at + r.path}
+            className={`rounded-md border px-3 py-2 text-sm transition-colors ${
+              isNew
+                ? "border-emerald-500/40 bg-emerald-500/5 animate-in fade-in slide-in-from-top-1"
+                : "border-border bg-background/40"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                    isNew ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground/40"
+                  }`}
+                />
+                <span className="truncate font-medium">{r.path}</span>
+              </div>
+              <span className="text-[11px] text-muted-foreground tabular-nums shrink-0">
+                {relativeTime(r.created_at, now)}
+              </span>
+            </div>
+            <div className="mt-0.5 text-xs text-muted-foreground truncate">
+              {loc || "Unknown location"} · {r.device ?? "—"} · {r.browser ?? "—"}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
