@@ -54,19 +54,27 @@ function AnalyticsPage() {
   const [err, setErr] = useState<string | null>(null);
   const [section, setSection] = useState<SectionKey>("overview");
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [newViews, setNewViews] = useState(0);
+  const prevTotalRef = useRef<number | null>(null);
 
-  async function load(pw: string, d: number) {
-    setLoading(true);
+  async function load(pw: string, d: number, opts?: { silent?: boolean }) {
+    if (!opts?.silent) setLoading(true);
     setErr(null);
     try {
       const res = await fetchSummary({ data: { password: pw, days: d } });
+      if (prevTotalRef.current !== null && res.totalViews > prevTotalRef.current) {
+        setNewViews(res.totalViews - prevTotalRef.current);
+        setTimeout(() => setNewViews(0), 4000);
+      }
+      prevTotalRef.current = res.totalViews;
       setData(res);
       setLastUpdated(new Date());
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to load");
-      setData(null);
+      if (!opts?.silent) setData(null);
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }
 
@@ -79,6 +87,16 @@ function AnalyticsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-refresh polling
+  useEffect(() => {
+    if (!password || !autoRefresh) return;
+    const id = setInterval(() => {
+      void load(password, days, { silent: true });
+    }, 10000);
+    return () => clearInterval(id);
+  }, [password, autoRefresh, days]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   async function handleUnlock(e: React.FormEvent) {
     e.preventDefault();
