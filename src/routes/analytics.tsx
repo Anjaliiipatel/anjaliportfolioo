@@ -350,25 +350,49 @@ function Overview({ data, lastUpdated }: { data: AnalyticsSummary; lastUpdated: 
     { hour: 0, views: 0 },
   );
 
+  const activeNow = useMemo(() => {
+    const cutoff = Date.now() - 5 * 60 * 1000;
+    return data.recent.filter((r) => new Date(r.created_at).getTime() >= cutoff).length;
+  }, [data.recent]);
+  const viewsLastHour = useMemo(() => {
+    const cutoff = Date.now() - 60 * 60 * 1000;
+    return data.recent.filter((r) => new Date(r.created_at).getTime() >= cutoff).length;
+  }, [data.recent]);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Stat label="Total views" value={data.totalViews} icon={Eye} accent />
+        <Stat
+          label="Active now"
+          value={activeNow}
+          sub="last 5 min"
+          icon={Radio}
+          accent
+          pulse={activeNow > 0}
+        />
+        <Stat label="Views last hour" value={viewsLastHour} icon={Activity} />
+        <Stat label="Total views" value={data.totalViews} icon={Eye} />
         <Stat label="Unique visitors" value={data.uniqueVisitors} icon={Users} />
-        <Stat label="Views today" value={todayViews} icon={Calendar} />
-        <Stat label="Last 7 days" value={last7} icon={TrendingUp} />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Stat label="Views today" value={todayViews} icon={Calendar} />
+        <Stat label="Last 7 days" value={last7} icon={TrendingUp} />
         <Stat label="Avg / day" value={avgPerDay} icon={TrendingUp} />
-        <Stat label="Peak day" value={peak.views} sub={peak.day} icon={Calendar} />
         <Stat label="Peak hour" value={peakHour.views} sub={`${peakHour.hour}:00`} icon={Clock} />
-        <Stat label="Countries" value={data.byCountry.length} icon={Globe} />
       </div>
 
-      <Section title="Views per day" subtitle="Trend over selected range">
-        <DayChart data={data.byDay} />
-      </Section>
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Section title="Views per day" subtitle="Trend over selected range">
+            <DayChart data={data.byDay} />
+          </Section>
+        </div>
+        <Section title="Live activity" subtitle="Latest visits, updating in real time">
+          <ActivityTicker rows={data.recent.slice(0, 8)} />
+        </Section>
+      </div>
+
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Section title="Top pages">
