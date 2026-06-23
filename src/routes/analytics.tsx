@@ -271,14 +271,6 @@ function AnalyticsPage() {
               <option value={365}>Last year</option>
             </select>
             <button
-              onClick={() => password && load(password, days)}
-              disabled={loading}
-              className="h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent disabled:opacity-50"
-              title="Refresh"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </button>
-            <button
               onClick={() => setAutoRefresh((v) => !v)}
               className={`h-9 px-3 flex items-center gap-1.5 rounded-md border text-xs font-medium transition-colors ${
                 autoRefresh
