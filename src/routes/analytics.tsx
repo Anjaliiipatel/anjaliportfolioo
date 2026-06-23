@@ -246,7 +246,15 @@ function AnalyticsPage() {
               })}
             </div>
             <h2 className="hidden md:block text-lg font-semibold capitalize">{section}</h2>
+            <LiveBadge active={autoRefresh} />
+            {newViews > 0 && (
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-xs font-medium animate-in fade-in slide-in-from-top-1">
+                <ArrowUp className="h-3 w-3" />
+                {newViews} new
+              </span>
+            )}
           </div>
+
           <div className="flex items-center gap-2">
             <select
               value={days}
