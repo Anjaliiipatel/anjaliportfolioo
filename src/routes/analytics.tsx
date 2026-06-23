@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   getAnalyticsSummary,
   verifyAdminPassword,
   type AnalyticsSummary,
+  type RecentVisit,
 } from "@/lib/analytics.functions";
 import { setOwner } from "@/lib/analytics-tracker";
 import {
@@ -20,7 +21,12 @@ import {
   Eye,
   Calendar,
   Clock,
+  Radio,
+  Pause,
+  Play,
+  ArrowUp,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({
