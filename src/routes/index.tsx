@@ -145,6 +145,7 @@ const skills = {
     "Flask",
     "Streamlit",
     "Wireshark",
+    "Burp Suite",
     "VS Code",
     "Postman",
     "Jupyter Notebook",
