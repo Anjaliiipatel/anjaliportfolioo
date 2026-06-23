@@ -25,6 +25,7 @@ import {
   Pause,
   Play,
   ArrowUp,
+  ArrowLeft,
 } from "lucide-react";
 
 
