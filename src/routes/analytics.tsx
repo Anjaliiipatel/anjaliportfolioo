@@ -743,3 +743,102 @@ function RecentTable({
     </div>
   );
 }
+
+/* ---------------- Live components ---------------- */
+
+function LiveBadge({ active }: { active: boolean }) {
+  return (
+    <span
+      className={`hidden sm:inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+        active
+          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          : "bg-muted text-muted-foreground"
+      }`}
+    >
+      <span className="relative flex h-1.5 w-1.5">
+        {active && (
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+        )}
+        <span
+          className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
+            active ? "bg-emerald-500" : "bg-muted-foreground"
+          }`}
+        />
+      </span>
+      {active ? "Live" : "Paused"}
+    </span>
+  );
+}
+
+function relativeTime(iso: string, now: number): string {
+  const diff = Math.max(0, Math.floor((now - new Date(iso).getTime()) / 1000));
+  if (diff < 5) return "just now";
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+function ActivityTicker({ rows }: { rows: RecentVisit[] }) {
+  const [now, setNow] = useState(() => Date.now());
+  const [seen, setSeen] = useState<Set<string>>(() => new Set(rows.map((r) => r.created_at)));
+  const prevTopRef = useRef<string | null>(rows[0]?.created_at ?? null);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const top = rows[0]?.created_at ?? null;
+    if (top && top !== prevTopRef.current) {
+      prevTopRef.current = top;
+      setSeen((prev) => {
+        const next = new Set(prev);
+        rows.forEach((r) => next.add(r.created_at));
+        return next;
+      });
+    }
+  }, [rows]);
+
+  if (rows.length === 0) {
+    return <div className="text-sm text-muted-foreground">Waiting for activity…</div>;
+  }
+
+  return (
+    <ul className="space-y-2 max-h-[18rem] overflow-y-auto pr-1">
+      {rows.map((r) => {
+        const isNew = !seen.has(r.created_at);
+        const loc = [r.city, r.country].filter(Boolean).join(", ");
+        return (
+          <li
+            key={r.created_at + r.path}
+            className={`rounded-md border px-3 py-2 text-sm transition-colors ${
+              isNew
+                ? "border-emerald-500/40 bg-emerald-500/5 animate-in fade-in slide-in-from-top-1"
+                : "border-border bg-background/40"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                    isNew ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground/40"
+                  }`}
+                />
+                <span className="truncate font-medium">{r.path}</span>
+              </div>
+              <span className="text-[11px] text-muted-foreground tabular-nums shrink-0">
+                {relativeTime(r.created_at, now)}
+              </span>
+            </div>
+            <div className="mt-0.5 text-xs text-muted-foreground truncate">
+              {loc || "Unknown location"} · {r.device ?? "—"} · {r.browser ?? "—"}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
