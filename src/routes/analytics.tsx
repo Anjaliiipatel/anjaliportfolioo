@@ -548,24 +548,30 @@ function Stat({
   sub,
   icon: Icon,
   accent,
+  pulse,
 }: {
   label: string;
   value: number | string;
   sub?: string;
   icon?: typeof Eye;
   accent?: boolean;
+  pulse?: boolean;
 }) {
   return (
     <div
-      className={`rounded-lg border p-4 ${
-        accent
-          ? "border-primary/30 bg-primary/5"
-          : "border-border bg-card"
+      className={`relative rounded-lg border p-4 ${
+        accent ? "border-primary/30 bg-primary/5" : "border-border bg-card"
       }`}
     >
+      {pulse && (
+        <span className="absolute top-3 right-3 flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+        </span>
+      )}
       <div className="flex items-center justify-between">
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-        {Icon && (
+        {Icon && !pulse && (
           <div
             className={`h-7 w-7 rounded-md flex items-center justify-center ${
               accent ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
@@ -575,6 +581,7 @@ function Stat({
           </div>
         )}
       </div>
+
       <div className="text-2xl font-semibold mt-2 tabular-nums">
         {typeof value === "number" ? value.toLocaleString() : value}
       </div>
