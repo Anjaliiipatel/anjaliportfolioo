@@ -216,7 +216,14 @@ function AnalyticsPage() {
             );
           })}
         </nav>
-        <div className="p-3 border-t border-border">
+        <div className="p-3 border-t border-border space-y-2">
+          <Link
+            to="/"
+            className="w-full flex items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Go back to homepage
+          </Link>
           <button
             onClick={handleLock}
             className="w-full flex items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
@@ -298,6 +305,13 @@ function AnalyticsPage() {
             >
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             </button>
+            <Link
+              to="/"
+              className="md:hidden h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent"
+              title="Go back to homepage"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
             <button
               onClick={handleLock}
               className="md:hidden h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent"
