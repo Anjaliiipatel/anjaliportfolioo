@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -25,6 +25,7 @@ import {
   Pause,
   Play,
   ArrowUp,
+  ArrowLeft,
 } from "lucide-react";
 
 
@@ -159,6 +160,13 @@ function AnalyticsPage() {
           >
             {unlocking ? "Checking…" : "Unlock"}
           </button>
+          <Link
+            to="/"
+            className="w-full flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Go back to homepage
+          </Link>
         </form>
       </div>
     );
