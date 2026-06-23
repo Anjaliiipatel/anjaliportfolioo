@@ -305,6 +305,13 @@ function AnalyticsPage() {
             >
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             </button>
+            <Link
+              to="/"
+              className="md:hidden h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent"
+              title="Go back to homepage"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
             <button
               onClick={handleLock}
               className="md:hidden h-9 w-9 flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent"
