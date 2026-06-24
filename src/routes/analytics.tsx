@@ -7,7 +7,7 @@ import {
   type AnalyticsSummary,
   type RecentVisit,
 } from "@/lib/analytics.functions";
-import { setOwner } from "@/lib/analytics-tracker";
+import { isOwner, setOwner } from "@/lib/analytics-tracker";
 import {
   LayoutDashboard,
   Users,
