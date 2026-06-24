@@ -26,6 +26,8 @@ import {
   Play,
   ArrowUp,
   ArrowLeft,
+  EyeOff,
+
 } from "lucide-react";
 
 
