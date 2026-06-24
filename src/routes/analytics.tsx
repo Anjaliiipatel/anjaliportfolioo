@@ -60,6 +60,18 @@ function AnalyticsPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [newViews, setNewViews] = useState(0);
   const prevTotalRef = useRef<number | null>(null);
+  const [excluded, setExcluded] = useState(false);
+
+  useEffect(() => {
+    setExcluded(isOwner());
+  }, []);
+
+  function toggleExcluded() {
+    const next = !excluded;
+    setOwner(next);
+    setExcluded(next);
+  }
+
 
   async function load(pw: string, d: number, opts?: { silent?: boolean }) {
     if (!opts?.silent) setLoading(true);
