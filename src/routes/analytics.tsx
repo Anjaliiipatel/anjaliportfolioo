@@ -126,6 +126,7 @@ function AnalyticsPage() {
       }
       sessionStorage.setItem(PW_KEY, pwInput);
       setOwner(true);
+      setExcluded(true);
       setPassword(pwInput);
       setPwInput("");
       void load(pwInput, days);
