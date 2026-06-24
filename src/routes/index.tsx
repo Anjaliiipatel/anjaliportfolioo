@@ -136,6 +136,13 @@ const skills = {
     "API Security",
     "Security Testing",
   ],
+  "AI / ML Security": [
+    "LLM Security & Red-Teaming",
+    "Adversarial ML",
+    "Anomaly Detection",
+    "AI / ML for Cyber Deception",
+    "Model Safety Evaluation",
+  ],
   "Tools & Platforms": [
     "Git",
     "GitHub",
