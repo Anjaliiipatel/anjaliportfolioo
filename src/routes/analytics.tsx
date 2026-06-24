@@ -7,7 +7,7 @@ import {
   type AnalyticsSummary,
   type RecentVisit,
 } from "@/lib/analytics.functions";
-import { setOwner } from "@/lib/analytics-tracker";
+import { isOwner, setOwner } from "@/lib/analytics-tracker";
 import {
   LayoutDashboard,
   Users,
@@ -26,6 +26,8 @@ import {
   Play,
   ArrowUp,
   ArrowLeft,
+  EyeOff,
+
 } from "lucide-react";
 
 
@@ -58,6 +60,18 @@ function AnalyticsPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [newViews, setNewViews] = useState(0);
   const prevTotalRef = useRef<number | null>(null);
+  const [excluded, setExcluded] = useState(false);
+
+  useEffect(() => {
+    setExcluded(isOwner());
+  }, []);
+
+  function toggleExcluded() {
+    const next = !excluded;
+    setOwner(next);
+    setExcluded(next);
+  }
+
 
   async function load(pw: string, d: number, opts?: { silent?: boolean }) {
     if (!opts?.silent) setLoading(true);
@@ -83,6 +97,7 @@ function AnalyticsPage() {
     const saved = typeof window !== "undefined" ? sessionStorage.getItem(PW_KEY) : null;
     if (saved) {
       setOwner(true);
+      setExcluded(true);
       setPassword(saved);
       void load(saved, days);
     }
@@ -111,6 +126,7 @@ function AnalyticsPage() {
       }
       sessionStorage.setItem(PW_KEY, pwInput);
       setOwner(true);
+      setExcluded(true);
       setPassword(pwInput);
       setPwInput("");
       void load(pwInput, days);
@@ -217,6 +233,26 @@ function AnalyticsPage() {
           })}
         </nav>
         <div className="p-3 border-t border-border space-y-2">
+          <div className={`rounded-md border p-3 text-xs ${excluded ? "border-emerald-500/40 bg-emerald-500/10" : "border-amber-500/40 bg-amber-500/10"}`}>
+            <div className="flex items-center gap-2 font-medium">
+              <EyeOff className={`h-3.5 w-3.5 ${excluded ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`} />
+              <span className={excluded ? "text-emerald-700 dark:text-emerald-300" : "text-amber-700 dark:text-amber-300"}>
+                {excluded ? "Your views are excluded" : "Your views are being counted"}
+              </span>
+            </div>
+            <p className="mt-1 text-muted-foreground leading-relaxed">
+              {excluded
+                ? "Visits from this browser won't show in analytics."
+                : "Enable to stop counting your own visits from this browser."}
+            </p>
+            <button
+              onClick={toggleExcluded}
+              className="mt-2 w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs font-medium hover:bg-accent transition-colors"
+            >
+              {excluded ? "Start counting my views" : "Exclude my views"}
+            </button>
+          </div>
+
           <Link
             to="/"
             className="w-full flex items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent transition-colors"
