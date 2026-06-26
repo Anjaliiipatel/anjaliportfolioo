@@ -327,7 +327,7 @@ function Portfolio() {
             <span className="text-border">/</span>
             <span>B.S. Computer & Information Technology</span>
             <span className="text-border">/</span>
-            <span>Minor in Criminology</span>
+            <span>{"\n"}</span>
           </div>
 
           <div
