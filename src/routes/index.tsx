@@ -453,7 +453,7 @@ function Portfolio() {
               <div className="font-semibold">Purdue University</div>
               <div className="text-sm text-muted-foreground">B.S. Computer & Information Technology</div>
               <div className="text-sm text-muted-foreground">B.S. Digital Criminology</div>
-              <div className="text-sm text-muted-foreground">Minor: Criminology</div>
+              <div className="text-sm text-muted-foreground">{"\n"}</div>
               <div className="text-xs font-mono text-primary mt-3">Expected May 2028</div>
             </div>
             <div className="p-5 rounded-lg border border-border bg-surface">
