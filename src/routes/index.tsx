@@ -613,9 +613,9 @@ function Portfolio() {
               {"\n"}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <ContactLink href="mailto:anjalipatel0621@gmail.com" icon={Mail} label="Email" />
-              <ContactLink href="https://www.linkedin.com/in/anjali-patelll/" icon={Linkedin} label="LinkedIn" />
-              <ContactLink href="https://github.com/Anjaliiipatel" icon={Github} label="GitHub" />
+              <ContactLink href="mailto:anjalipatel0621@gmail.com" icon={Mail} label="Email" event="contact_email_click" />
+              <ContactLink href="https://www.linkedin.com/in/anjali-patelll/" icon={Linkedin} label="LinkedIn" event="contact_linkedin_click" />
+              <ContactLink href="https://github.com/Anjaliiipatel" icon={Github} label="GitHub" event="contact_github_click" />
             </div>
           </div>
         </div>
