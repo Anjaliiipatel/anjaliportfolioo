@@ -4,6 +4,7 @@ import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, 
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
+import { trackEvent, setOwner } from "@/lib/analytics-tracker";
 
 function VisitorGate({ onContinue }: { onContinue: () => void }) {
   return (
