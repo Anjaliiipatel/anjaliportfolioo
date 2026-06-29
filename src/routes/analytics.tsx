@@ -31,6 +31,7 @@ import {
   Download,
   ArrowUpRight,
   ArrowDownRight,
+  Mail,
 } from "lucide-react";
 
 
