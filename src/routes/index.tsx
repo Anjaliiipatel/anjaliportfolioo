@@ -720,10 +720,12 @@ function ContactLink({
   href,
   icon: Icon,
   label,
+  event,
 }: {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  event?: "contact_email_click" | "contact_linkedin_click" | "contact_github_click";
 }) {
   const external = href.startsWith("http");
   return (
@@ -731,6 +733,7 @@ function ContactLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
+      onClick={() => event && void trackEvent(event)}
       className="group inline-flex items-center gap-2 px-5 py-3 rounded-md bg-background border border-border hover:border-primary hover:text-primary transition-all"
     >
       <Icon className="w-4 h-4" />
