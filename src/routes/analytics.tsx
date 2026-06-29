@@ -718,6 +718,17 @@ function downloadRecentVisitsCsv(
 
 /* ---------------- Building blocks ---------------- */
 
+function compare(current: number, previous: number): { value: number; direction: "up" | "down" | "flat" } {
+  if (previous === 0) {
+    return { value: current > 0 ? 100 : 0, direction: current > 0 ? "up" : "flat" };
+  }
+  const pct = Math.round(((current - previous) / previous) * 100);
+  return {
+    value: Math.abs(pct),
+    direction: pct > 0 ? "up" : pct < 0 ? "down" : "flat",
+  };
+}
+
 function Stat({
   label,
   value,
@@ -725,6 +736,7 @@ function Stat({
   icon: Icon,
   accent,
   pulse,
+  change,
 }: {
   label: string;
   value: number | string;
@@ -732,6 +744,7 @@ function Stat({
   icon?: typeof Eye;
   accent?: boolean;
   pulse?: boolean;
+  change?: { value: number; direction: "up" | "down" | "flat" };
 }) {
   return (
     <div
@@ -758,8 +771,24 @@ function Stat({
         )}
       </div>
 
-      <div className="text-2xl font-semibold mt-2 tabular-nums">
-        {typeof value === "number" ? value.toLocaleString() : value}
+      <div className="flex items-baseline gap-2 mt-2">
+        <div className="text-2xl font-semibold tabular-nums">
+          {typeof value === "number" ? value.toLocaleString() : value}
+        </div>
+        {change && change.direction !== "flat" && (
+          <span
+            className={`inline-flex items-center gap-0.5 text-xs font-medium ${
+              change.direction === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+            }`}
+          >
+            {change.direction === "up" ? (
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            ) : (
+              <ArrowDownRight className="h-3.5 w-3.5" />
+            )}
+            {change.value}%
+          </span>
+        )}
       </div>
       {sub && <div className="text-xs text-muted-foreground mt-0.5">{sub}</div>}
     </div>
