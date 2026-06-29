@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device: string | null
+          id: number
+          language: string | null
+          metadata: Json | null
+          name: string
+          os: string | null
+          path: string
+          referrer: string | null
+          region: string | null
+          screen_size: string | null
+          timezone: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          visitor_hash: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: number
+          language?: string | null
+          metadata?: Json | null
+          name: string
+          os?: string | null
+          path: string
+          referrer?: string | null
+          region?: string | null
+          screen_size?: string | null
+          timezone?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visitor_hash?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: number
+          language?: string | null
+          metadata?: Json | null
+          name?: string
+          os?: string | null
+          path?: string
+          referrer?: string | null
+          region?: string | null
+          screen_size?: string | null
+          timezone?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visitor_hash?: string | null
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           browser: string | null
@@ -29,6 +95,9 @@ export type Database = {
           region: string | null
           screen_size: string | null
           timezone: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
           visitor_hash: string | null
         }
         Insert: {
@@ -45,6 +114,9 @@ export type Database = {
           region?: string | null
           screen_size?: string | null
           timezone?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           visitor_hash?: string | null
         }
         Update: {
@@ -61,6 +133,9 @@ export type Database = {
           region?: string | null
           screen_size?: string | null
           timezone?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           visitor_hash?: string | null
         }
         Relationships: []
