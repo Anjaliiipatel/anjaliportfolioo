@@ -43,7 +43,7 @@ export const Route = createFileRoute("/analytics")({
 
 const PW_KEY = "analytics_pw";
 
-type SectionKey = "overview" | "visitors" | "pages" | "locations" | "tech" | "live";
+type SectionKey = "overview" | "visitors" | "pages" | "locations" | "tech" | "live" | "goals";
 
 function AnalyticsPage() {
   const fetchSummary = useServerFn(getAnalyticsSummary);
@@ -197,6 +197,7 @@ function AnalyticsPage() {
     { key: "pages", label: "Pages", icon: FileText },
     { key: "locations", label: "Locations", icon: Globe },
     { key: "tech", label: "Tech", icon: MonitorSmartphone },
+    { key: "goals", label: "Goals", icon: Target },
     { key: "live", label: "Live feed", icon: Activity },
   ];
 
@@ -379,11 +380,12 @@ function AnalyticsPage() {
 
           {data && (
             <>
-              {section === "overview" && <Overview data={data} lastUpdated={lastUpdated} />}
+              {section === "overview" && <Overview data={data} lastUpdated={lastUpdated} days={days} />}
               {section === "visitors" && <Visitors data={data} />}
               {section === "pages" && <Pages data={data} />}
               {section === "locations" && <Locations data={data} />}
               {section === "tech" && <Tech data={data} />}
+              {section === "goals" && <Goals data={data} />}
               {section === "live" && <Live data={data} />}
             </>
           )}
