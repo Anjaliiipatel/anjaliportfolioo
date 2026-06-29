@@ -27,7 +27,10 @@ import {
   ArrowUp,
   ArrowLeft,
   EyeOff,
-
+  Target,
+  Download,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 
 
