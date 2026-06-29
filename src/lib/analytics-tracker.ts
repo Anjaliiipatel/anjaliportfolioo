@@ -194,7 +194,10 @@ export type TrackableEvent =
   | "contact_linkedin_click"
   | "contact_github_click";
 
-export async function trackEvent(name: TrackableEvent, metadata?: Record<string, unknown>) {
+export async function trackEvent(
+  name: TrackableEvent,
+  metadata?: Record<string, string | number | boolean | null | undefined>,
+) {
   if (typeof window === "undefined") return;
   if (isOwner()) return;
   if (isBot()) return;
@@ -202,12 +205,19 @@ export async function trackEvent(name: TrackableEvent, metadata?: Record<string,
   const geo = await fetchGeo();
   const common = buildCommonPayload(window.location.pathname);
 
+  const cleanMeta: Record<string, string | number | boolean | null> = {};
+  if (metadata) {
+    for (const [k, v] of Object.entries(metadata)) {
+      cleanMeta[k] = v === undefined ? null : v;
+    }
+  }
+
   await supabase.from("analytics_events").insert({
     name,
     ...common,
     country: geo.country,
     region: geo.region,
     city: geo.city,
-    metadata: metadata ?? null,
+    metadata: cleanMeta,
   });
 }
