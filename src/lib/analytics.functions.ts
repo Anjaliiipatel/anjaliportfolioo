@@ -11,11 +11,20 @@ export type RecentVisit = {
   os: string | null;
   referrer: string | null;
   timezone: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+};
+
+export type PeriodCompare = {
+  totalViews: number;
+  uniqueVisitors: number;
 };
 
 export type AnalyticsSummary = {
   totalViews: number;
   uniqueVisitors: number;
+  prevPeriod: PeriodCompare;
   byDay: Array<{ day: string; views: number }>;
   topPaths: Array<{ path: string; views: number }>;
   topReferrers: Array<{ referrer: string; views: number }>;
@@ -27,6 +36,10 @@ export type AnalyticsSummary = {
   byLanguage: Array<{ language: string; views: number }>;
   byTimezone: Array<{ timezone: string; views: number }>;
   byHour: Array<{ hour: number; views: number }>;
+  byUtmSource: Array<{ source: string; views: number }>;
+  byUtmMedium: Array<{ medium: string; views: number }>;
+  byUtmCampaign: Array<{ campaign: string; views: number }>;
+  events: Array<{ name: string; count: number }>;
   recent: RecentVisit[];
 };
 
@@ -55,23 +68,47 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
 
     const days = Math.min(Math.max(data.days ?? 30, 1), 365);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    const now = Date.now();
+    const since = new Date(now - days * 24 * 60 * 60 * 1000).toISOString();
+    const prevSince = new Date(now - 2 * days * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: rows, error } = await supabaseAdmin
-      .from("page_views")
-      .select(
-        "path,referrer,device,browser,os,country,region,city,language,screen_size,timezone,visitor_hash,created_at",
-      )
-      .gte("created_at", since)
-      .order("created_at", { ascending: false })
-      .limit(50000);
-    if (error) throw new Error(error.message);
+    const [viewsRes, prevViewsRes, eventsRes] = await Promise.all([
+      supabaseAdmin
+        .from("page_views")
+        .select(
+          "path,referrer,device,browser,os,country,region,city,language,screen_size,timezone,visitor_hash,created_at,utm_source,utm_medium,utm_campaign",
+        )
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(50000),
+      supabaseAdmin
+        .from("page_views")
+        .select("visitor_hash,created_at")
+        .gte("created_at", prevSince)
+        .lt("created_at", since)
+        .limit(50000),
+      supabaseAdmin
+        .from("analytics_events")
+        .select("name")
+        .gte("created_at", since)
+        .limit(50000),
+    ]);
 
-    const safe = rows ?? [];
+    if (viewsRes.error) throw new Error(viewsRes.error.message);
+    if (prevViewsRes.error) throw new Error(prevViewsRes.error.message);
+    if (eventsRes.error) throw new Error(eventsRes.error.message);
+
+    const safe = viewsRes.data ?? [];
     const totalViews = safe.length;
     const uniqueVisitors = new Set(
       safe.map((r) => r.visitor_hash).filter(Boolean),
     ).size;
+
+    const prevRows = prevViewsRes.data ?? [];
+    const prevPeriod: PeriodCompare = {
+      totalViews: prevRows.length,
+      uniqueVisitors: new Set(prevRows.map((r) => r.visitor_hash).filter(Boolean)).size,
+    };
 
     const bucket = <T extends string>(items: Array<T | null | undefined>) => {
       const m = new Map<string, number>();
@@ -108,11 +145,18 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       os: (r.os as string | null) ?? null,
       referrer: (r.referrer as string | null) ?? null,
       timezone: (r.timezone as string | null) ?? null,
+      utm_source: (r.utm_source as string | null) ?? null,
+      utm_medium: (r.utm_medium as string | null) ?? null,
+      utm_campaign: (r.utm_campaign as string | null) ?? null,
     }));
+
+    const eventRows = eventsRes.data ?? [];
+    const eventCounts = bucket(eventRows.map((r) => r.name));
 
     return {
       totalViews,
       uniqueVisitors,
+      prevPeriod,
       byDay,
       byHour,
       topPaths: bucket(safe.map((r) => r.path)).slice(0, 10).map((x) => ({ path: x.key, views: x.views })),
@@ -137,6 +181,10 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       ).slice(0, 15).map((x) => ({ location: x.key, views: x.views })),
       byLanguage: bucket(safe.map((r) => r.language)).slice(0, 10).map((x) => ({ language: x.key, views: x.views })),
       byTimezone: bucket(safe.map((r) => r.timezone)).slice(0, 10).map((x) => ({ timezone: x.key, views: x.views })),
+      byUtmSource: bucket(safe.map((r) => r.utm_source)).slice(0, 10).map((x) => ({ source: x.key, views: x.views })),
+      byUtmMedium: bucket(safe.map((r) => r.utm_medium)).slice(0, 10).map((x) => ({ medium: x.key, views: x.views })),
+      byUtmCampaign: bucket(safe.map((r) => r.utm_campaign)).slice(0, 10).map((x) => ({ campaign: x.key, views: x.views })),
+      events: eventCounts.map((x) => ({ name: x.key, count: x.views })),
       recent,
     };
   });
