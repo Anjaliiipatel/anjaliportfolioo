@@ -435,8 +435,18 @@ function Overview({ data, lastUpdated, days }: { data: AnalyticsSummary; lastUpd
           pulse={activeNow > 0}
         />
         <Stat label="Views last hour" value={viewsLastHour} icon={Activity} />
-        <Stat label="Total views" value={data.totalViews} icon={Eye} />
-        <Stat label="Unique visitors" value={data.uniqueVisitors} icon={Users} />
+        <Stat
+          label="Total views"
+          value={data.totalViews}
+          change={compare(data.totalViews, data.prevPeriod.totalViews)}
+          icon={Eye}
+        />
+        <Stat
+          label="Unique visitors"
+          value={data.uniqueVisitors}
+          change={compare(data.uniqueVisitors, data.prevPeriod.uniqueVisitors)}
+          icon={Users}
+        />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
