@@ -636,25 +636,74 @@ function Live({ data }: { data: AnalyticsSummary }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h3 className="text-base font-semibold">Recent visits</h3>
           <p className="text-xs text-muted-foreground">
             Latest {data.recent.length} page views
           </p>
         </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter…"
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-44"
-        />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => downloadRecentVisitsCsv(filtered)}
+            className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent transition-colors"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export CSV
+          </button>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Filter…"
+            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-44"
+          />
+        </div>
       </div>
       <div className="rounded-lg border border-border bg-card overflow-hidden">
         <RecentTable rows={filtered} />
       </div>
     </div>
   );
+}
+
+function downloadRecentVisitsCsv(
+  rows: Array<{
+    created_at: string;
+    path: string;
+    city: string | null;
+    region: string | null;
+    country: string | null;
+    device: string | null;
+    browser: string | null;
+    os: string | null;
+    referrer: string | null;
+  }>,
+) {
+  const headers = ["When", "Page", "City", "Region", "Country", "Device", "Browser", "OS", "Referrer"];
+  const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const lines = rows.map((r) =>
+    [
+      new Date(r.created_at).toISOString(),
+      r.path,
+      r.city ?? "",
+      r.region ?? "",
+      r.country ?? "",
+      r.device ?? "",
+      r.browser ?? "",
+      r.os ?? "",
+      r.referrer ?? "",
+    ].map(escape).join(","),
+  );
+  const csv = [headers.join(","), ...lines].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `recent-visits-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /* ---------------- Building blocks ---------------- */
