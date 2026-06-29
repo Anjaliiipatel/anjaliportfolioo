@@ -364,6 +364,7 @@ function Portfolio() {
                 href={resumePdf.url}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => void trackEvent("resume_view")}
                 className="inline-flex items-center gap-2 px-5 py-3 hover:text-primary transition-colors"
               >
                 <FileText className="w-4 h-4" /> View Resume
@@ -374,6 +375,7 @@ function Portfolio() {
                 download="Anjali_Patel_Resume.pdf"
                 aria-label="Download resume"
                 title="Download resume"
+                onClick={() => void trackEvent("resume_download")}
                 className="inline-flex items-center px-3 hover:text-primary transition-colors"
               >
                 <ArrowUpRight className="w-4 h-4 rotate-90" />
