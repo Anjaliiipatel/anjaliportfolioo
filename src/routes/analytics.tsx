@@ -579,6 +579,46 @@ function Tech({ data }: { data: AnalyticsSummary }) {
   );
 }
 
+function Goals({ data }: { data: AnalyticsSummary }) {
+  const resumeViews = data.events.find((e) => e.name === "resume_view")?.count ?? 0;
+  const resumeDownloads = data.events.find((e) => e.name === "resume_download")?.count ?? 0;
+  const emailClicks = data.events.find((e) => e.name === "contact_email_click")?.count ?? 0;
+  const linkedinClicks = data.events.find((e) => e.name === "contact_linkedin_click")?.count ?? 0;
+  const githubClicks = data.events.find((e) => e.name === "contact_github_click")?.count ?? 0;
+  const totalConversions = resumeViews + resumeDownloads + emailClicks + linkedinClicks + githubClicks;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Stat label="Total conversions" value={totalConversions} icon={Target} accent />
+        <Stat label="Resume views" value={resumeViews} icon={Eye} />
+        <Stat label="Resume downloads" value={resumeDownloads} icon={Download} />
+        <Stat label="Contact clicks" value={emailClicks + linkedinClicks + githubClicks} icon={Mail} />
+      </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Section title="Resume funnel">
+          <RankList
+            items={[
+              { label: "View resume", value: resumeViews },
+              { label: "Download resume", value: resumeDownloads },
+              { label: "Download / view ratio", value: resumeViews ? Math.round((resumeDownloads / resumeViews) * 100) : 0 },
+            ]}
+          />
+        </Section>
+        <Section title="Contact links">
+          <RankList
+            items={[
+              { label: "Email", value: emailClicks },
+              { label: "LinkedIn", value: linkedinClicks },
+              { label: "GitHub", value: githubClicks },
+            ]}
+          />
+        </Section>
+      </div>
+    </div>
+  );
+}
+
 function Live({ data }: { data: AnalyticsSummary }) {
   const [query, setQuery] = useState("");
   const filtered = useMemo(() => {
