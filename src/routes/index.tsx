@@ -4,6 +4,7 @@ import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, 
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
+import { trackEvent, setOwner } from "@/lib/analytics-tracker";
 
 function VisitorGate({ onContinue }: { onContinue: () => void }) {
   return (
@@ -363,6 +364,7 @@ function Portfolio() {
                 href={resumePdf.url}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => void trackEvent("resume_view")}
                 className="inline-flex items-center gap-2 px-5 py-3 hover:text-primary transition-colors"
               >
                 <FileText className="w-4 h-4" /> View Resume
@@ -373,6 +375,7 @@ function Portfolio() {
                 download="Anjali_Patel_Resume.pdf"
                 aria-label="Download resume"
                 title="Download resume"
+                onClick={() => void trackEvent("resume_download")}
                 className="inline-flex items-center px-3 hover:text-primary transition-colors"
               >
                 <ArrowUpRight className="w-4 h-4 rotate-90" />
@@ -610,9 +613,9 @@ function Portfolio() {
               {"\n"}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <ContactLink href="mailto:anjalipatel0621@gmail.com" icon={Mail} label="Email" />
-              <ContactLink href="https://www.linkedin.com/in/anjali-patelll/" icon={Linkedin} label="LinkedIn" />
-              <ContactLink href="https://github.com/Anjaliiipatel" icon={Github} label="GitHub" />
+              <ContactLink href="mailto:anjalipatel0621@gmail.com" icon={Mail} label="Email" event="contact_email_click" />
+              <ContactLink href="https://www.linkedin.com/in/anjali-patelll/" icon={Linkedin} label="LinkedIn" event="contact_linkedin_click" />
+              <ContactLink href="https://github.com/Anjaliiipatel" icon={Github} label="GitHub" event="contact_github_click" />
             </div>
           </div>
         </div>
@@ -717,10 +720,12 @@ function ContactLink({
   href,
   icon: Icon,
   label,
+  event,
 }: {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  event?: "contact_email_click" | "contact_linkedin_click" | "contact_github_click";
 }) {
   const external = href.startsWith("http");
   return (
@@ -728,6 +733,7 @@ function ContactLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
+      onClick={() => event && void trackEvent(event)}
       className="group inline-flex items-center gap-2 px-5 py-3 rounded-md bg-background border border-border hover:border-primary hover:text-primary transition-all"
     >
       <Icon className="w-4 h-4" />

@@ -27,7 +27,11 @@ import {
   ArrowUp,
   ArrowLeft,
   EyeOff,
-
+  Target,
+  Download,
+  ArrowUpRight,
+  ArrowDownRight,
+  Mail,
 } from "lucide-react";
 
 
@@ -40,7 +44,7 @@ export const Route = createFileRoute("/analytics")({
 
 const PW_KEY = "analytics_pw";
 
-type SectionKey = "overview" | "visitors" | "pages" | "locations" | "tech" | "live";
+type SectionKey = "overview" | "visitors" | "pages" | "locations" | "tech" | "live" | "goals";
 
 function AnalyticsPage() {
   const fetchSummary = useServerFn(getAnalyticsSummary);
@@ -194,6 +198,7 @@ function AnalyticsPage() {
     { key: "pages", label: "Pages", icon: FileText },
     { key: "locations", label: "Locations", icon: Globe },
     { key: "tech", label: "Tech", icon: MonitorSmartphone },
+    { key: "goals", label: "Goals", icon: Target },
     { key: "live", label: "Live feed", icon: Activity },
   ];
 
@@ -376,11 +381,12 @@ function AnalyticsPage() {
 
           {data && (
             <>
-              {section === "overview" && <Overview data={data} lastUpdated={lastUpdated} />}
+              {section === "overview" && <Overview data={data} lastUpdated={lastUpdated} days={days} />}
               {section === "visitors" && <Visitors data={data} />}
               {section === "pages" && <Pages data={data} />}
               {section === "locations" && <Locations data={data} />}
               {section === "tech" && <Tech data={data} />}
+              {section === "goals" && <Goals data={data} />}
               {section === "live" && <Live data={data} />}
             </>
           )}
@@ -392,7 +398,7 @@ function AnalyticsPage() {
 
 /* ---------------- Sections ---------------- */
 
-function Overview({ data, lastUpdated }: { data: AnalyticsSummary; lastUpdated: Date | null }) {
+function Overview({ data, lastUpdated, days }: { data: AnalyticsSummary; lastUpdated: Date | null; days: number }) {
   const today = new Date().toISOString().slice(0, 10);
   const todayViews = data.byDay.find((d) => d.day === today)?.views ?? 0;
   const last7 = data.byDay.slice(-7).reduce((s, d) => s + d.views, 0);
@@ -429,8 +435,18 @@ function Overview({ data, lastUpdated }: { data: AnalyticsSummary; lastUpdated: 
           pulse={activeNow > 0}
         />
         <Stat label="Views last hour" value={viewsLastHour} icon={Activity} />
-        <Stat label="Total views" value={data.totalViews} icon={Eye} />
-        <Stat label="Unique visitors" value={data.uniqueVisitors} icon={Users} />
+        <Stat
+          label="Total views"
+          value={data.totalViews}
+          change={compare(data.totalViews, data.prevPeriod.totalViews)}
+          icon={Eye}
+        />
+        <Stat
+          label="Unique visitors"
+          value={data.uniqueVisitors}
+          change={compare(data.uniqueVisitors, data.prevPeriod.uniqueVisitors)}
+          icon={Users}
+        />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -508,9 +524,22 @@ function Pages({ data }: { data: AnalyticsSummary }) {
       <Section title="Top pages">
         <RankList items={data.topPaths.map((p) => ({ label: p.path, value: p.views }))} />
       </Section>
-      <Section title="Top referrers">
-        <RankList items={data.topReferrers.map((p) => ({ label: p.referrer, value: p.views }))} />
-      </Section>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Section title="Top referrers">
+          <RankList items={data.topReferrers.map((p) => ({ label: p.referrer, value: p.views }))} />
+        </Section>
+        <Section title="UTM sources">
+          <RankList items={data.byUtmSource.map((p) => ({ label: p.source, value: p.views }))} />
+        </Section>
+      </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Section title="UTM mediums">
+          <RankList items={data.byUtmMedium.map((p) => ({ label: p.medium, value: p.views }))} />
+        </Section>
+        <Section title="UTM campaigns">
+          <RankList items={data.byUtmCampaign.map((p) => ({ label: p.campaign, value: p.views }))} />
+        </Section>
+      </div>
     </div>
   );
 }
@@ -561,6 +590,46 @@ function Tech({ data }: { data: AnalyticsSummary }) {
   );
 }
 
+function Goals({ data }: { data: AnalyticsSummary }) {
+  const resumeViews = data.events.find((e) => e.name === "resume_view")?.count ?? 0;
+  const resumeDownloads = data.events.find((e) => e.name === "resume_download")?.count ?? 0;
+  const emailClicks = data.events.find((e) => e.name === "contact_email_click")?.count ?? 0;
+  const linkedinClicks = data.events.find((e) => e.name === "contact_linkedin_click")?.count ?? 0;
+  const githubClicks = data.events.find((e) => e.name === "contact_github_click")?.count ?? 0;
+  const totalConversions = resumeViews + resumeDownloads + emailClicks + linkedinClicks + githubClicks;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Stat label="Total conversions" value={totalConversions} icon={Target} accent />
+        <Stat label="Resume views" value={resumeViews} icon={Eye} />
+        <Stat label="Resume downloads" value={resumeDownloads} icon={Download} />
+        <Stat label="Contact clicks" value={emailClicks + linkedinClicks + githubClicks} icon={Mail} />
+      </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Section title="Resume funnel">
+          <RankList
+            items={[
+              { label: "View resume", value: resumeViews },
+              { label: "Download resume", value: resumeDownloads },
+              { label: "Download / view ratio", value: resumeViews ? Math.round((resumeDownloads / resumeViews) * 100) : 0 },
+            ]}
+          />
+        </Section>
+        <Section title="Contact links">
+          <RankList
+            items={[
+              { label: "Email", value: emailClicks },
+              { label: "LinkedIn", value: linkedinClicks },
+              { label: "GitHub", value: githubClicks },
+            ]}
+          />
+        </Section>
+      </div>
+    </div>
+  );
+}
+
 function Live({ data }: { data: AnalyticsSummary }) {
   const [query, setQuery] = useState("");
   const filtered = useMemo(() => {
@@ -577,19 +646,28 @@ function Live({ data }: { data: AnalyticsSummary }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h3 className="text-base font-semibold">Recent visits</h3>
           <p className="text-xs text-muted-foreground">
             Latest {data.recent.length} page views
           </p>
         </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter…"
-          className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-44"
-        />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => downloadRecentVisitsCsv(filtered)}
+            className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent transition-colors"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export CSV
+          </button>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Filter…"
+            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm w-44"
+          />
+        </div>
       </div>
       <div className="rounded-lg border border-border bg-card overflow-hidden">
         <RecentTable rows={filtered} />
@@ -598,7 +676,58 @@ function Live({ data }: { data: AnalyticsSummary }) {
   );
 }
 
+function downloadRecentVisitsCsv(
+  rows: Array<{
+    created_at: string;
+    path: string;
+    city: string | null;
+    region: string | null;
+    country: string | null;
+    device: string | null;
+    browser: string | null;
+    os: string | null;
+    referrer: string | null;
+  }>,
+) {
+  const headers = ["When", "Page", "City", "Region", "Country", "Device", "Browser", "OS", "Referrer"];
+  const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const lines = rows.map((r) =>
+    [
+      new Date(r.created_at).toISOString(),
+      r.path,
+      r.city ?? "",
+      r.region ?? "",
+      r.country ?? "",
+      r.device ?? "",
+      r.browser ?? "",
+      r.os ?? "",
+      r.referrer ?? "",
+    ].map(escape).join(","),
+  );
+  const csv = [headers.join(","), ...lines].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `recent-visits-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 /* ---------------- Building blocks ---------------- */
+
+function compare(current: number, previous: number): { value: number; direction: "up" | "down" | "flat" } {
+  if (previous === 0) {
+    return { value: current > 0 ? 100 : 0, direction: current > 0 ? "up" : "flat" };
+  }
+  const pct = Math.round(((current - previous) / previous) * 100);
+  return {
+    value: Math.abs(pct),
+    direction: pct > 0 ? "up" : pct < 0 ? "down" : "flat",
+  };
+}
 
 function Stat({
   label,
@@ -607,6 +736,7 @@ function Stat({
   icon: Icon,
   accent,
   pulse,
+  change,
 }: {
   label: string;
   value: number | string;
@@ -614,6 +744,7 @@ function Stat({
   icon?: typeof Eye;
   accent?: boolean;
   pulse?: boolean;
+  change?: { value: number; direction: "up" | "down" | "flat" };
 }) {
   return (
     <div
@@ -640,8 +771,24 @@ function Stat({
         )}
       </div>
 
-      <div className="text-2xl font-semibold mt-2 tabular-nums">
-        {typeof value === "number" ? value.toLocaleString() : value}
+      <div className="flex items-baseline gap-2 mt-2">
+        <div className="text-2xl font-semibold tabular-nums">
+          {typeof value === "number" ? value.toLocaleString() : value}
+        </div>
+        {change && change.direction !== "flat" && (
+          <span
+            className={`inline-flex items-center gap-0.5 text-xs font-medium ${
+              change.direction === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+            }`}
+          >
+            {change.direction === "up" ? (
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            ) : (
+              <ArrowDownRight className="h-3.5 w-3.5" />
+            )}
+            {change.value}%
+          </span>
+        )}
       </div>
       {sub && <div className="text-xs text-muted-foreground mt-0.5">{sub}</div>}
     </div>
