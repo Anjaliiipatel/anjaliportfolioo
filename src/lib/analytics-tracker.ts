@@ -66,6 +66,48 @@ function detectOS(): string {
   return "Other";
 }
 
+function isBot(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent.toLowerCase();
+  if (!ua) return true;
+  const botPatterns = [
+    "bot",
+    "crawler",
+    "spider",
+    "scrape",
+    "headless",
+    "selenium",
+    "puppeteer",
+    "playwright",
+    "cypress",
+    "phantomjs",
+    "slimerjs",
+    "facebookexternalhit",
+    "twitterbot",
+    "linkedinbot",
+    "googlebot",
+    "bingbot",
+    "yandex",
+    "baidu",
+    "duckduckbot",
+    "slurp",
+    " MJ12bot",
+  ];
+  return botPatterns.some((p) => ua.includes(p));
+}
+
+function getUtmParams(): { source: string | null; medium: string | null; campaign: string | null } {
+  if (typeof window === "undefined" || !window.location.search) {
+    return { source: null, medium: null, campaign: null };
+  }
+  const params = new URLSearchParams(window.location.search);
+  return {
+    source: params.get("utm_source") || null,
+    medium: params.get("utm_medium") || null,
+    campaign: params.get("utm_campaign") || null,
+  };
+}
+
 type GeoInfo = { country: string | null; region: string | null; city: string | null };
 
 async function fetchGeo(): Promise<GeoInfo> {
@@ -83,17 +125,13 @@ async function fetchGeo(): Promise<GeoInfo> {
   }
 }
 
-let lastTracked = "";
-
-export async function trackPageView(path: string) {
-  if (typeof window === "undefined") return;
-  if (isOwner()) return;
-  // Dedupe same path within 1s (route effect can fire twice in strict mode)
-  const key = `${path}|${Date.now() >> 10}`;
-  if (key === lastTracked) return;
-  lastTracked = key;
-
-  const geo = await fetchGeo();
+function buildCommonPayload(path: string) {
+  const geo = { country: null, region: null, city: null } as GeoInfo;
+  fetchGeo().then((g) => {
+    geo.country = g.country;
+    geo.region = g.region;
+    geo.city = g.city;
+  });
 
   const language =
     typeof navigator !== "undefined" ? (navigator.language || "").slice(0, 32) || null : null;
@@ -108,19 +146,68 @@ export async function trackPageView(path: string) {
   } catch {
     /* ignore */
   }
+  const utm = getUtmParams();
 
-  await supabase.from("page_views").insert({
+  return {
     path,
     referrer: document.referrer || null,
     device: detectDevice(),
     browser: detectBrowser(),
     os: detectOS(),
-    country: geo.country,
-    region: geo.region,
-    city: geo.city,
     language,
     screen_size,
     timezone,
+    utm_source: utm.source,
+    utm_medium: utm.medium,
+    utm_campaign: utm.campaign,
     visitor_hash: getVisitorHash(),
+  };
+}
+
+let lastTracked = "";
+
+export async function trackPageView(path: string) {
+  if (typeof window === "undefined") return;
+  if (isOwner()) return;
+  if (isBot()) return;
+
+  // Dedupe same path within 1s (route effect can fire twice in strict mode)
+  const key = `${path}|${Date.now() >> 10}`;
+  if (key === lastTracked) return;
+  lastTracked = key;
+
+  const geo = await fetchGeo();
+  const common = buildCommonPayload(path);
+
+  await supabase.from("page_views").insert({
+    ...common,
+    country: geo.country,
+    region: geo.region,
+    city: geo.city,
+  });
+}
+
+export type TrackableEvent =
+  | "resume_view"
+  | "resume_download"
+  | "contact_email_click"
+  | "contact_linkedin_click"
+  | "contact_github_click";
+
+export async function trackEvent(name: TrackableEvent, metadata?: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  if (isOwner()) return;
+  if (isBot()) return;
+
+  const geo = await fetchGeo();
+  const common = buildCommonPayload(window.location.pathname);
+
+  await supabase.from("analytics_events").insert({
+    name,
+    ...common,
+    country: geo.country,
+    region: geo.region,
+    city: geo.city,
+    metadata: metadata ?? null,
   });
 }
