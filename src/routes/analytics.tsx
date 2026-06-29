@@ -513,9 +513,22 @@ function Pages({ data }: { data: AnalyticsSummary }) {
       <Section title="Top pages">
         <RankList items={data.topPaths.map((p) => ({ label: p.path, value: p.views }))} />
       </Section>
-      <Section title="Top referrers">
-        <RankList items={data.topReferrers.map((p) => ({ label: p.referrer, value: p.views }))} />
-      </Section>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Section title="Top referrers">
+          <RankList items={data.topReferrers.map((p) => ({ label: p.referrer, value: p.views }))} />
+        </Section>
+        <Section title="UTM sources">
+          <RankList items={data.byUtmSource.map((p) => ({ label: p.source, value: p.views }))} />
+        </Section>
+      </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Section title="UTM mediums">
+          <RankList items={data.byUtmMedium.map((p) => ({ label: p.medium, value: p.views }))} />
+        </Section>
+        <Section title="UTM campaigns">
+          <RankList items={data.byUtmCampaign.map((p) => ({ label: p.campaign, value: p.views }))} />
+        </Section>
+      </div>
     </div>
   );
 }
