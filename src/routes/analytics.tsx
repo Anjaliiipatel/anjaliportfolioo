@@ -397,7 +397,7 @@ function AnalyticsPage() {
 
 /* ---------------- Sections ---------------- */
 
-function Overview({ data, lastUpdated }: { data: AnalyticsSummary; lastUpdated: Date | null }) {
+function Overview({ data, lastUpdated, days }: { data: AnalyticsSummary; lastUpdated: Date | null; days: number }) {
   const today = new Date().toISOString().slice(0, 10);
   const todayViews = data.byDay.find((d) => d.day === today)?.views ?? 0;
   const last7 = data.byDay.slice(-7).reduce((s, d) => s + d.views, 0);
