@@ -25,6 +25,7 @@ export type Database = {
           language: string | null
           metadata: Json | null
           name: string
+          org: string | null
           os: string | null
           path: string
           referrer: string | null
@@ -46,6 +47,7 @@ export type Database = {
           language?: string | null
           metadata?: Json | null
           name: string
+          org?: string | null
           os?: string | null
           path: string
           referrer?: string | null
@@ -67,6 +69,7 @@ export type Database = {
           language?: string | null
           metadata?: Json | null
           name?: string
+          org?: string | null
           os?: string | null
           path?: string
           referrer?: string | null
@@ -89,6 +92,7 @@ export type Database = {
           device: string | null
           id: number
           language: string | null
+          org: string | null
           os: string | null
           path: string
           referrer: string | null
@@ -108,6 +112,7 @@ export type Database = {
           device?: string | null
           id?: number
           language?: string | null
+          org?: string | null
           os?: string | null
           path: string
           referrer?: string | null
@@ -127,6 +132,7 @@ export type Database = {
           device?: string | null
           id?: number
           language?: string | null
+          org?: string | null
           os?: string | null
           path?: string
           referrer?: string | null

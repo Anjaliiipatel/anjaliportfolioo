@@ -1,0 +1,1 @@
+ALTER TABLE public.page_views ADD COLUMN IF NOT EXISTS org TEXT; ALTER TABLE public.analytics_events ADD COLUMN IF NOT EXISTS org TEXT;
