@@ -187,6 +187,7 @@ export async function trackPageView(path: string) {
     country: geo.country,
     region: geo.region,
     city: geo.city,
+    org: geo.org,
   });
 }
 
