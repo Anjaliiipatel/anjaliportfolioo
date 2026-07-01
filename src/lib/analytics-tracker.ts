@@ -108,22 +108,25 @@ function getUtmParams(): { source: string | null; medium: string | null; campaig
   };
 }
 
-type GeoInfo = { country: string | null; region: string | null; city: string | null };
+type GeoInfo = { country: string | null; region: string | null; city: string | null; org: string | null };
 
 async function fetchGeo(): Promise<GeoInfo> {
   try {
     const res = await fetch("https://ipapi.co/json/", { cache: "force-cache" });
-    if (!res.ok) return { country: null, region: null, city: null };
-    const j = (await res.json()) as { country_name?: string; region?: string; city?: string };
+    if (!res.ok) return { country: null, region: null, city: null, org: null };
+    const j = (await res.json()) as { country_name?: string; region?: string; city?: string; org?: string; asn?: string };
+    const org = (j.org ?? "").trim();
     return {
       country: (j.country_name ?? "").slice(0, 128) || null,
       region: (j.region ?? "").slice(0, 128) || null,
       city: (j.city ?? "").slice(0, 128) || null,
+      org: org ? org.slice(0, 256) : null,
     };
   } catch {
-    return { country: null, region: null, city: null };
+    return { country: null, region: null, city: null, org: null };
   }
 }
+
 
 function buildCommonPayload(path: string) {
   const geo = { country: null, region: null, city: null } as GeoInfo;
