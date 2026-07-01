@@ -33,6 +33,7 @@ export type AnalyticsSummary = {
   byBrowser: Array<{ browser: string; views: number }>;
   byOS: Array<{ os: string; views: number }>;
   byCountry: Array<{ country: string; views: number }>;
+  byOrg: Array<{ org: string; views: number }>;
   byLocation: Array<{ location: string; views: number }>;
   byLanguage: Array<{ language: string; views: number }>;
   byTimezone: Array<{ timezone: string; views: number }>;
