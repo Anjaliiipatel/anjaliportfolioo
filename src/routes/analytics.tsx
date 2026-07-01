@@ -636,7 +636,7 @@ function Live({ data }: { data: AnalyticsSummary }) {
     const q = query.trim().toLowerCase();
     if (!q) return data.recent;
     return data.recent.filter((r) =>
-      [r.path, r.city, r.region, r.country, r.device, r.browser, r.os, r.referrer]
+      [r.path, r.city, r.region, r.country, r.org, r.device, r.browser, r.os, r.referrer]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
