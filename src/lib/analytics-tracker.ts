@@ -222,6 +222,8 @@ export async function trackEvent(
     country: geo.country,
     region: geo.region,
     city: geo.city,
+    org: geo.org,
     metadata: cleanMeta,
   });
 }
+
