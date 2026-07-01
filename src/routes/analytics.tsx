@@ -892,6 +892,7 @@ function RecentTable({
     city: string | null;
     region: string | null;
     country: string | null;
+    org: string | null;
     device: string | null;
     browser: string | null;
     os: string | null;
@@ -907,6 +908,7 @@ function RecentTable({
           <tr className="text-left text-xs uppercase text-muted-foreground">
             <th className="py-2 px-3 font-medium">When</th>
             <th className="py-2 px-3 font-medium">Page</th>
+            <th className="py-2 px-3 font-medium">Who (org / ISP)</th>
             <th className="py-2 px-3 font-medium">Location</th>
             <th className="py-2 px-3 font-medium">Device</th>
             <th className="py-2 px-3 font-medium">Browser</th>
@@ -933,6 +935,16 @@ function RecentTable({
                 <td className="py-2 px-3 truncate max-w-[180px]" title={r.path}>
                   {r.path}
                 </td>
+                <td
+                  className="py-2 px-3 truncate max-w-[200px]"
+                  title={r.org ?? ""}
+                >
+                  {r.org ? (
+                    <span className="font-medium">{r.org}</span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </td>
                 <td className="py-2 px-3">{loc}</td>
                 <td className="py-2 px-3">{r.device ?? "—"}</td>
                 <td className="py-2 px-3">{r.browser ?? "—"}</td>
@@ -951,6 +963,7 @@ function RecentTable({
     </div>
   );
 }
+
 
 /* ---------------- Live components ---------------- */
 
