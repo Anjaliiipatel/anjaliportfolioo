@@ -173,6 +173,10 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       byBrowser: bucket(safe.map((r) => r.browser)).map((x) => ({ browser: x.key, views: x.views })),
       byOS: bucket(safe.map((r) => r.os)).map((x) => ({ os: x.key, views: x.views })),
       byCountry: bucket(safe.map((r) => r.country)).slice(0, 10).map((x) => ({ country: x.key, views: x.views })),
+      byOrg: bucket(safe.map((r) => {
+        const o = (r.org as string | null) ?? "";
+        return o && o.trim() ? o : null;
+      })).slice(0, 15).map((x) => ({ org: x.key, views: x.views })),
       byLocation: bucket(
         safe.map((r) => {
           const city = (r.city as string | null) || "";
