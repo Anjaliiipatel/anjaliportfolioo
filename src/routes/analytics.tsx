@@ -683,18 +683,20 @@ function downloadRecentVisitsCsv(
     city: string | null;
     region: string | null;
     country: string | null;
+    org: string | null;
     device: string | null;
     browser: string | null;
     os: string | null;
     referrer: string | null;
   }>,
 ) {
-  const headers = ["When", "Page", "City", "Region", "Country", "Device", "Browser", "OS", "Referrer"];
+  const headers = ["When", "Page", "Organization", "City", "Region", "Country", "Device", "Browser", "OS", "Referrer"];
   const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
   const lines = rows.map((r) =>
     [
       new Date(r.created_at).toISOString(),
       r.path,
+      r.org ?? "",
       r.city ?? "",
       r.region ?? "",
       r.country ?? "",
@@ -715,6 +717,7 @@ function downloadRecentVisitsCsv(
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
 
 /* ---------------- Building blocks ---------------- */
 
