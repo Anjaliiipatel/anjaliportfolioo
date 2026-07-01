@@ -552,6 +552,12 @@ function Locations({ data }: { data: AnalyticsSummary }) {
         <Stat label="Cities / regions" value={data.byLocation.length} icon={Globe} />
         <Stat label="Timezones" value={data.byTimezone.length} icon={Clock} />
       </div>
+      <Section
+        title="Who's visiting (companies / ISPs)"
+        subtitle="Derived from the visitor's IP — recruiters, universities, and companies often show their name"
+      >
+        <RankList items={data.byOrg.map((p) => ({ label: p.org, value: p.views }))} />
+      </Section>
       <Section title="Visitor locations" subtitle="City, region, country">
         <RankList items={data.byLocation.map((p) => ({ label: p.location, value: p.views }))} />
       </Section>
