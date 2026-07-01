@@ -552,6 +552,12 @@ function Locations({ data }: { data: AnalyticsSummary }) {
         <Stat label="Cities / regions" value={data.byLocation.length} icon={Globe} />
         <Stat label="Timezones" value={data.byTimezone.length} icon={Clock} />
       </div>
+      <Section
+        title="Who's visiting (companies / ISPs)"
+        subtitle="Derived from the visitor's IP — recruiters, universities, and companies often show their name"
+      >
+        <RankList items={data.byOrg.map((p) => ({ label: p.org, value: p.views }))} />
+      </Section>
       <Section title="Visitor locations" subtitle="City, region, country">
         <RankList items={data.byLocation.map((p) => ({ label: p.location, value: p.views }))} />
       </Section>
@@ -636,7 +642,7 @@ function Live({ data }: { data: AnalyticsSummary }) {
     const q = query.trim().toLowerCase();
     if (!q) return data.recent;
     return data.recent.filter((r) =>
-      [r.path, r.city, r.region, r.country, r.device, r.browser, r.os, r.referrer]
+      [r.path, r.city, r.region, r.country, r.org, r.device, r.browser, r.os, r.referrer]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -683,18 +689,20 @@ function downloadRecentVisitsCsv(
     city: string | null;
     region: string | null;
     country: string | null;
+    org: string | null;
     device: string | null;
     browser: string | null;
     os: string | null;
     referrer: string | null;
   }>,
 ) {
-  const headers = ["When", "Page", "City", "Region", "Country", "Device", "Browser", "OS", "Referrer"];
+  const headers = ["When", "Page", "Organization", "City", "Region", "Country", "Device", "Browser", "OS", "Referrer"];
   const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
   const lines = rows.map((r) =>
     [
       new Date(r.created_at).toISOString(),
       r.path,
+      r.org ?? "",
       r.city ?? "",
       r.region ?? "",
       r.country ?? "",
@@ -715,6 +723,7 @@ function downloadRecentVisitsCsv(
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
 
 /* ---------------- Building blocks ---------------- */
 
@@ -889,6 +898,7 @@ function RecentTable({
     city: string | null;
     region: string | null;
     country: string | null;
+    org: string | null;
     device: string | null;
     browser: string | null;
     os: string | null;
@@ -904,6 +914,7 @@ function RecentTable({
           <tr className="text-left text-xs uppercase text-muted-foreground">
             <th className="py-2 px-3 font-medium">When</th>
             <th className="py-2 px-3 font-medium">Page</th>
+            <th className="py-2 px-3 font-medium">Who (org / ISP)</th>
             <th className="py-2 px-3 font-medium">Location</th>
             <th className="py-2 px-3 font-medium">Device</th>
             <th className="py-2 px-3 font-medium">Browser</th>
@@ -930,6 +941,16 @@ function RecentTable({
                 <td className="py-2 px-3 truncate max-w-[180px]" title={r.path}>
                   {r.path}
                 </td>
+                <td
+                  className="py-2 px-3 truncate max-w-[200px]"
+                  title={r.org ?? ""}
+                >
+                  {r.org ? (
+                    <span className="font-medium">{r.org}</span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </td>
                 <td className="py-2 px-3">{loc}</td>
                 <td className="py-2 px-3">{r.device ?? "—"}</td>
                 <td className="py-2 px-3">{r.browser ?? "—"}</td>
@@ -948,6 +969,7 @@ function RecentTable({
     </div>
   );
 }
+
 
 /* ---------------- Live components ---------------- */
 

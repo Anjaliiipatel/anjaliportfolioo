@@ -6,6 +6,7 @@ export type RecentVisit = {
   city: string | null;
   region: string | null;
   country: string | null;
+  org: string | null;
   device: string | null;
   browser: string | null;
   os: string | null;
@@ -32,6 +33,7 @@ export type AnalyticsSummary = {
   byBrowser: Array<{ browser: string; views: number }>;
   byOS: Array<{ os: string; views: number }>;
   byCountry: Array<{ country: string; views: number }>;
+  byOrg: Array<{ org: string; views: number }>;
   byLocation: Array<{ location: string; views: number }>;
   byLanguage: Array<{ language: string; views: number }>;
   byTimezone: Array<{ timezone: string; views: number }>;
@@ -76,7 +78,7 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       supabaseAdmin
         .from("page_views")
         .select(
-          "path,referrer,device,browser,os,country,region,city,language,screen_size,timezone,visitor_hash,created_at,utm_source,utm_medium,utm_campaign",
+          "path,referrer,device,browser,os,country,region,city,org,language,screen_size,timezone,visitor_hash,created_at,utm_source,utm_medium,utm_campaign",
         )
         .gte("created_at", since)
         .order("created_at", { ascending: false })
@@ -140,6 +142,7 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       city: (r.city as string | null) ?? null,
       region: (r.region as string | null) ?? null,
       country: (r.country as string | null) ?? null,
+      org: (r.org as string | null) ?? null,
       device: (r.device as string | null) ?? null,
       browser: (r.browser as string | null) ?? null,
       os: (r.os as string | null) ?? null,
@@ -170,6 +173,10 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       byBrowser: bucket(safe.map((r) => r.browser)).map((x) => ({ browser: x.key, views: x.views })),
       byOS: bucket(safe.map((r) => r.os)).map((x) => ({ os: x.key, views: x.views })),
       byCountry: bucket(safe.map((r) => r.country)).slice(0, 10).map((x) => ({ country: x.key, views: x.views })),
+      byOrg: bucket(safe.map((r) => {
+        const o = (r.org as string | null) ?? "";
+        return o && o.trim() ? o : null;
+      })).slice(0, 15).map((x) => ({ org: x.key, views: x.views })),
       byLocation: bucket(
         safe.map((r) => {
           const city = (r.city as string | null) || "";
