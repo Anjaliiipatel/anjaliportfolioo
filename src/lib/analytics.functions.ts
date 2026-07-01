@@ -6,6 +6,7 @@ export type RecentVisit = {
   city: string | null;
   region: string | null;
   country: string | null;
+  org: string | null;
   device: string | null;
   browser: string | null;
   os: string | null;
