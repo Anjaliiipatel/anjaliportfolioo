@@ -78,7 +78,7 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       supabaseAdmin
         .from("page_views")
         .select(
-          "path,referrer,device,browser,os,country,region,city,language,screen_size,timezone,visitor_hash,created_at,utm_source,utm_medium,utm_campaign",
+          "path,referrer,device,browser,os,country,region,city,org,language,screen_size,timezone,visitor_hash,created_at,utm_source,utm_medium,utm_campaign",
         )
         .gte("created_at", since)
         .order("created_at", { ascending: false })
