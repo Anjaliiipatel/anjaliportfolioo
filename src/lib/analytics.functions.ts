@@ -142,6 +142,7 @@ export const getAnalyticsSummary = createServerFn({ method: "POST" })
       city: (r.city as string | null) ?? null,
       region: (r.region as string | null) ?? null,
       country: (r.country as string | null) ?? null,
+      org: (r.org as string | null) ?? null,
       device: (r.device as string | null) ?? null,
       browser: (r.browser as string | null) ?? null,
       os: (r.os as string | null) ?? null,
