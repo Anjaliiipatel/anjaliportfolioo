@@ -193,6 +193,16 @@ const experience = [
     ],
   },
   {
+    role: "Cybersecurity Apprentice",
+    org: "UpToStudy",
+    period: "Jun 2026 – July 2026",
+    bullets: [
+      "Supported cybersecurity training and educational program operations",
+      "Assisted with curriculum delivery and learner engagement initiatives",
+      "Contributed to program logistics and technical content coordination",
+    ],
+  },
+  {
     role: "LLM Security Researcher",
     org: "OpenAI Research Project",
     period: "Feb 2026 – Mar 2026",
