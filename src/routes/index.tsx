@@ -193,17 +193,6 @@ const experience = [
     ],
   },
   {
-    role: "Cybersecurity Apprentice",
-    org: "UpToStudy",
-    period: "Jun 2026 – Present",
-    bullets: [
-      "Conduct vulnerability assessments and security reviews",
-      "Analyze application security risks and attack surfaces",
-      "Document findings and remediation recommendations",
-      "Produce professional technical security reports",
-    ],
-  },
-  {
     role: "LLM Security Researcher",
     org: "OpenAI Research Project",
     period: "Feb 2026 – Mar 2026",
@@ -387,7 +376,6 @@ function Portfolio() {
           <div className="mt-16 grid sm:grid-cols-2 gap-4">
             {[
               { label: "Currently @", value: "Rolls-Royce", sub: "Systems Security Engineering Intern" },
-              { label: "Apprentice @", value: "UpToStudy", sub: "Cybersecurity Apprentice" },
             ].map((r, i) => (
               <div
                 key={r.value}
