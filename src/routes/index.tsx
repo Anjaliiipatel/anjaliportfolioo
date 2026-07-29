@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText, LogIn, User } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
+import comptiaBadge from "@/assets/comptia-badge.jpg.asset.json";
+import awsBadge from "@/assets/aws-badge.jpg.asset.json";
+import azureBadge from "@/assets/azure-badge.jpg.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
 import { trackEvent, setOwner } from "@/lib/analytics-tracker";
 
