@@ -49,9 +49,9 @@ function VisitorGate({ onContinue }: { onContinue: () => void }) {
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
+      meta: [
       { title: "Anjali Patel — Cybersecurity & Security Engineering" },
-      { name: "description", content: "Computer & Information Technology student at Purdue specializing in cloud security, threat detection, and ICS security." },
+      { name: "description", content: "Computer & Information Technology and Digital Criminology student at Purdue specializing in cloud security, threat detection, and ICS security." },
       { property: "og:title", content: "Anjali Patel — Cybersecurity Portfolio" },
       { property: "og:description", content: "Cybersecurity & security engineering portfolio: cloud threat hunting, ICS security, EDR, and enterprise infrastructure." },
       { property: "og:type", content: "website" },
@@ -433,7 +433,9 @@ function Portfolio() {
         <div className="grid md:grid-cols-3 gap-10">
           <div className="md:col-span-2 space-y-5 text-lg text-muted-foreground leading-relaxed">
             <p>
-              I'm a Computer and Information Technology student at Purdue University pursuing a career in
+              I'm a double-degree student at Purdue University studying{" "}
+              <span className="text-foreground">Computer and Information Technology</span> and{" "}
+              <span className="text-foreground">Digital Criminology</span>, pursuing a career in
               cybersecurity and security engineering. My interests span{" "}
               <span className="text-foreground">cloud security</span>,{" "}
               <span className="text-foreground">threat detection</span>,{" "}
@@ -442,10 +444,12 @@ function Portfolio() {
               <span className="text-foreground">ICS security</span>.
             </p>
             <p>
-              Through internships, apprenticeships, and independent projects, I've built experience in
-              security monitoring, detection engineering, cloud threat hunting, secure system design, and
-              enterprise infrastructure administration. I enjoy building practical security solutions that
-              help organizations identify, investigate, and respond to cyber threats.
+              Combining technical security skills with a criminology lens, I'm especially interested in
+              understanding adversary behavior, digital investigations, and the human factors behind cyber
+              incidents. Through internships, apprenticeships, and independent projects, I've built
+              experience in security monitoring, detection engineering, cloud threat hunting, secure system
+              design, and enterprise infrastructure administration. I enjoy building practical security
+              solutions that help organizations identify, investigate, and respond to cyber threats.
             </p>
           </div>
           <div className="space-y-4">
