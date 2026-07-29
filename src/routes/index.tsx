@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText, LogIn, User } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
+import comptiaBadge from "@/assets/comptia-badge.jpg.asset.json";
+import awsBadge from "@/assets/aws-badge.jpg.asset.json";
+import azureBadge from "@/assets/azure-badge.jpg.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
 import { trackEvent, setOwner } from "@/lib/analytics-tracker";
 
@@ -462,14 +465,50 @@ function Portfolio() {
               <div className="text-xs font-mono text-primary mt-3">Expected May 2028</div>
             </div>
             <div className="p-5 rounded-lg border border-border bg-surface">
-              <div className="text-xs font-mono text-primary mb-3 uppercase tracking-wider">Certifications</div>
-              <div className="space-y-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <Lock className="w-3 h-3 text-primary" /> CompTIA Security+
-                  <span className="text-muted-foreground text-xs">(in progress)</span>
+              <div className="text-xs font-mono text-primary mb-4 uppercase tracking-wider">Certifications</div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <img
+                    src={comptiaBadge.url}
+                    alt="CompTIA Security+ badge"
+                    className="w-12 h-12 rounded-lg object-cover border border-border shrink-0"
+                    loading="lazy"
+                    width={48}
+                    height={48}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium">CompTIA Security+</div>
+                    <div className="text-xs text-muted-foreground">CompTIA · in progress</div>
+                  </div>
                 </div>
-                <div className="text-muted-foreground text-xs ml-5">+ AWS Certified Cloud Practitioner (in progress)</div>
-                <div className="text-muted-foreground text-xs ml-5">+ Microsoft AZ-900 Azure Fundamentals (in progress)</div>
+                <div className="flex items-start gap-3">
+                  <img
+                    src={awsBadge.url}
+                    alt="AWS Certified Cloud Practitioner badge"
+                    className="w-12 h-12 rounded-lg object-cover border border-border shrink-0"
+                    loading="lazy"
+                    width={48}
+                    height={48}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium">AWS Certified Cloud Practitioner</div>
+                    <div className="text-xs text-muted-foreground">Amazon Web Services · June 2026</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <img
+                    src={azureBadge.url}
+                    alt="Microsoft Azure Fundamentals badge"
+                    className="w-12 h-12 rounded-lg object-cover border border-border shrink-0"
+                    loading="lazy"
+                    width={48}
+                    height={48}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium">Microsoft AZ-900 Azure Fundamentals</div>
+                    <div className="text-xs text-muted-foreground">Microsoft · in progress</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
