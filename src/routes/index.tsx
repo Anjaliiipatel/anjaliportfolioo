@@ -477,7 +477,7 @@ function Portfolio() {
                   />
                   <div className="min-w-0">
                     <div className="text-sm font-medium">ISC2 Certified in Cybersecurity</div>
-                    <div className="text-xs text-muted-foreground">ISC2 · in progress</div>
+                    <div className="text-xs text-muted-foreground">ISC2 · August 2026</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
