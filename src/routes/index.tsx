@@ -468,16 +468,16 @@ function Portfolio() {
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <img
-                    src={comptiaBadge.url}
-                    alt="CompTIA Security+ badge"
+                    src={isc2Badge.url}
+                    alt="ISC2 Certified in Cybersecurity badge"
                     className="w-12 h-12 rounded-lg object-cover border border-border shrink-0"
                     loading="lazy"
                     width={48}
                     height={48}
                   />
                   <div className="min-w-0">
-                    <div className="text-sm font-medium">CompTIA Security+</div>
-                    <div className="text-xs text-muted-foreground">CompTIA · in progress</div>
+                    <div className="text-sm font-medium">ISC2 Certified in Cybersecurity</div>
+                    <div className="text-xs text-muted-foreground">ISC2 · in progress</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -492,20 +492,6 @@ function Portfolio() {
                   <div className="min-w-0">
                     <div className="text-sm font-medium">AWS Certified Cloud Practitioner</div>
                     <div className="text-xs text-muted-foreground">Amazon Web Services · June 2026</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <img
-                    src={azureBadge.url}
-                    alt="Microsoft Azure Fundamentals badge"
-                    className="w-12 h-12 rounded-lg object-cover border border-border shrink-0"
-                    loading="lazy"
-                    width={48}
-                    height={48}
-                  />
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium">Microsoft AZ-900 Azure Fundamentals</div>
-                    <div className="text-xs text-muted-foreground">Microsoft · in progress</div>
                   </div>
                 </div>
               </div>
