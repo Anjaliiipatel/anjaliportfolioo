@@ -5,6 +5,7 @@ import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import isc2Badge from "@/assets/isc2-badge.jpg.asset.json";
 import awsBadge from "@/assets/aws-badge.jpg.asset.json";
+import anthropicBadge from "@/assets/anthropic-badge.jpg.asset.json";
 import { useReveal } from "@/hooks/use-reveal";
 import { trackEvent, setOwner } from "@/lib/analytics-tracker";
 
@@ -492,6 +493,20 @@ function Portfolio() {
                   <div className="min-w-0">
                     <div className="text-sm font-medium">AWS Certified Cloud Practitioner</div>
                     <div className="text-xs text-muted-foreground">Amazon Web Services · June 2026</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <img
+                    src={anthropicBadge.url}
+                    alt="Claude Certified Architect - Foundations badge"
+                    className="w-12 h-12 rounded-lg object-cover border border-border shrink-0"
+                    loading="lazy"
+                    width={48}
+                    height={48}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium">Claude Certified Architect - Foundations</div>
+                    <div className="text-xs text-muted-foreground">Anthropic · August 2026</div>
                   </div>
                 </div>
               </div>
