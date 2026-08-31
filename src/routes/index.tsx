@@ -185,6 +185,17 @@ const skills = {
 
 const experience = [
   {
+    role: "Student Data & Compliance Specialist",
+    org: "Purdue Athletics",
+    period: "Aug 2026 – Present",
+    bullets: [
+      "Monitor and record academic attendance and schedule compliance for Division I student-athletes across university lecture halls",
+      "Maintain rigorous data accuracy and timeliness in logging daily records used by academic advisors, coaches, and compliance staff",
+      "Handle sensitive student-athlete data in strict accordance with FERPA regulations and department confidentiality standards",
+      "Coordinate with Academic Support Services to verify real-time roster statuses and resolve scheduling discrepancies",
+    ],
+  },
+  {
     role: "Systems Security Engineering Intern",
     org: "Rolls-Royce",
     period: "May 2026 – Present",
