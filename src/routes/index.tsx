@@ -82,7 +82,7 @@ const projects = [
   },
   {
     title: "Secure ICS Telemetry & Detection Platform",
-    period: "May 2026 – Present",
+    period: "May 2026 – Aug 2026",
     icon: Cpu,
     description:
       "Industrial control system security platform monitoring telemetry, validating communications, and detecting malicious activity in real time.",
