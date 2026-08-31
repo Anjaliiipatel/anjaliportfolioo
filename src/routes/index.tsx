@@ -388,7 +388,7 @@ function Portfolio() {
           {/* Current roles strip */}
           <div className="mt-16 grid sm:grid-cols-2 gap-4">
             {[
-              { label: "Currently @", value: "Rolls-Royce", sub: "Systems Security Engineering Intern" },
+               { label: "\n", value: "\n", sub: "\n" },
             ].map((r, i) => (
               <div
                 key={r.value}
