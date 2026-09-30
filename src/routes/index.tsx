@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Cpu, Server, Lock, ArrowUpRight, FileText, LogIn, User } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import isc2Badge from "@/assets/isc2-badge.jpg.asset.json";
@@ -67,60 +67,43 @@ export const Route = createFileRoute("/")({
 
 const projects = [
   {
-    title: "Cloud Threat Hunting with MITRE ATT&CK",
-    period: "May 2026 – Jun 2026",
-    icon: Cloud,
-    description:
-      "Cloud threat hunting platform that analyzes AWS CloudTrail logs and maps adversary behavior to MITRE ATT&CK for Cloud techniques.",
-    highlights: [
-      "Detection rules for suspicious AWS activity",
-      "Simulated multi-stage cloud compromise with synthetic data",
-      "Mapped detections to MITRE ATT&CK techniques",
-      "Automated findings & investigation reports",
-    ],
-    tech: ["Python", "AWS CloudTrail", "MITRE ATT&CK", "Pandas"],
-  },
-  {
-    title: "Secure ICS Telemetry & Detection Platform",
-    period: "May 2026 – Aug 2026",
-    icon: Cpu,
-    description:
-      "Industrial control system security platform monitoring telemetry, validating communications, and detecting malicious activity in real time.",
-    highlights: [
-      "HMAC-based telemetry validation",
-      "Replay attack detection",
-      "Anomaly detection for operational monitoring",
-      "Zero Trust & Purdue Model principles",
-    ],
-    tech: ["Python", "Flask", "Streamlit", "Docker"],
-  },
-  {
-    title: "Mini Endpoint Detection & Response",
-    period: "Jun 2026 – Present",
+    title: "Agentic DevSecOps Guardrail & Remediation Engine",
     icon: Shield,
     description:
-      "Lightweight endpoint monitoring solution improving visibility into system activity and detecting suspicious behavior.",
+      "Autonomous DevSecOps pipeline that detects cloud infrastructure risks, routes remediation by severity, and safely validates fixes.",
     highlights: [
-      "Process monitoring functionality",
-      "Endpoint security event logging",
-      "Modular detection framework",
-      "Low-level systems programming in C++",
+      "Automated infrastructure-as-code parsing, cloud misconfiguration detection, and patch remediation",
+      "Dynamic risk routing using a One-Way vs. Two-Way Door framework",
+      "Sandbox-tested low-risk code fixes before automated merge",
+      "Human approval controls for high-risk IAM and privilege-escalation vulnerabilities",
     ],
-    tech: ["C++", "Windows API"],
+    tech: ["LangGraph", "Claude 3.5 Sonnet", "Python", "Docker", "GitHub Actions"],
   },
   {
-    title: "Nutanix Enterprise Infrastructure Lab",
-    period: "Jan 2026 – Apr 2026",
-    icon: Server,
+    title: "CloudSentinel Pro",
+    icon: Cloud,
     description:
-      "Built and administered an enterprise virtualized environment supporting Windows infrastructure and Active Directory services.",
+      "Serverless cloud security engine that detects and remediates risky AWS configurations in real time.",
     highlights: [
-      "Managed 2 Nutanix clusters & 7 VMs",
-      "Active Directory migration to Windows Server 2025",
-      "Configured WSUS & Windows Admin Center",
-      "PowerShell Remoting & virtualization best practices",
+      "Real-time remediation for unencrypted storage and public-access risks",
+      "Event-driven detection and response through EventBridge and Lambda",
+      "Cloud detection signatures mapped directly to MITRE ATT&CK techniques",
+      "Reduced SOC risk-prioritization latency by 40%",
     ],
-    tech: ["Nutanix AHV", "Active Directory", "Windows Server", "PowerShell"],
+    tech: ["AWS Lambda", "EventBridge", "Boto3", "Python", "MITRE ATT&CK"],
+  },
+  {
+    title: "MCP Chat – CLI Assistant & Protocol Integrator",
+    icon: Terminal,
+    description:
+      "Extensible command-line assistant that separates language-model orchestration from secure local tool execution through MCP.",
+    highlights: [
+      "Reduced developer context switching by 50%",
+      "Integrated local tools through the Model Context Protocol",
+      "Added dynamic @file references for targeted local context",
+      "Improved response accuracy with focused file ingestion",
+    ],
+    tech: ["Python", "MCP SDK", "Claude API", "prompt-toolkit"],
   },
 ];
 
@@ -540,7 +523,6 @@ function Portfolio() {
                   <div className="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-mono text-muted-foreground">{p.period}</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                   {p.title}
