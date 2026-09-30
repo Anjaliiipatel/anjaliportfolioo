@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User, Cpu, Server, Bot } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import isc2Badge from "@/assets/isc2-badge.jpg.asset.json";
@@ -65,45 +65,121 @@ export const Route = createFileRoute("/")({
 });
 
 
-const projects = [
+const projectSections = [
   {
-    title: "Agentic DevSecOps Guardrail & Remediation Engine",
-    icon: Shield,
-    description:
-      "Autonomous DevSecOps pipeline that detects cloud infrastructure risks, routes remediation by severity, and safely validates fixes.",
-    highlights: [
-      "Automated infrastructure-as-code parsing, cloud misconfiguration detection, and patch remediation",
-      "Dynamic risk routing using a One-Way vs. Two-Way Door framework",
-      "Sandbox-tested low-risk code fixes before automated merge",
-      "Human approval controls for high-risk IAM and privilege-escalation vulnerabilities",
-    ],
-    tech: ["LangGraph", "Claude 3.5 Sonnet", "Python", "Docker", "GitHub Actions"],
-  },
-  {
-    title: "CloudSentinel Pro",
+    category: "Cloud Security",
     icon: Cloud,
-    description:
-      "Serverless cloud security engine that detects and remediates risky AWS configurations in real time.",
-    highlights: [
-      "Real-time remediation for unencrypted storage and public-access risks",
-      "Event-driven detection and response through EventBridge and Lambda",
-      "Cloud detection signatures mapped directly to MITRE ATT&CK techniques",
-      "Reduced SOC risk-prioritization latency by 40%",
+    projects: [
+      {
+        title: "CloudSentinel Pro",
+        icon: Cloud,
+        description:
+          "Serverless cloud security engine that detects and remediates risky AWS configurations in real time.",
+        highlights: [
+          "Real-time remediation for unencrypted storage and public-access risks",
+          "Event-driven detection and response through EventBridge and Lambda",
+          "Cloud detection signatures mapped directly to MITRE ATT&CK techniques",
+          "Reduced SOC risk-prioritization latency by 40%",
+        ],
+        tech: ["AWS Lambda", "EventBridge", "Boto3", "Python", "MITRE ATT&CK"],
+      },
+      {
+        title: "Cloud Threat Hunting with MITRE ATT&CK",
+        icon: Cloud,
+        description:
+          "Cloud threat hunting platform that analyzes AWS CloudTrail logs and maps adversary behavior to MITRE ATT&CK for Cloud techniques.",
+        highlights: [
+          "Detection rules for suspicious AWS activity",
+          "Simulated multi-stage cloud compromise with synthetic data",
+          "Mapped detections to MITRE ATT&CK techniques",
+          "Automated findings & investigation reports",
+        ],
+        tech: ["Python", "AWS CloudTrail", "MITRE ATT&CK", "Pandas"],
+      },
     ],
-    tech: ["AWS Lambda", "EventBridge", "Boto3", "Python", "MITRE ATT&CK"],
   },
   {
-    title: "MCP Chat – CLI Assistant & Protocol Integrator",
-    icon: Terminal,
-    description:
-      "Extensible command-line assistant that separates language-model orchestration from secure local tool execution through MCP.",
-    highlights: [
-      "Reduced developer context switching by 50%",
-      "Integrated local tools through the Model Context Protocol",
-      "Added dynamic @file references for targeted local context",
-      "Improved response accuracy with focused file ingestion",
+    category: "AI & Agentic Security",
+    icon: Bot,
+    projects: [
+      {
+        title: "Agentic DevSecOps Guardrail & Remediation Engine",
+        icon: Shield,
+        description:
+          "Autonomous DevSecOps pipeline that detects cloud infrastructure risks, routes remediation by severity, and safely validates fixes.",
+        highlights: [
+          "Automated infrastructure-as-code parsing, cloud misconfiguration detection, and patch remediation",
+          "Dynamic risk routing using a One-Way vs. Two-Way Door framework",
+          "Sandbox-tested low-risk code fixes before automated merge",
+          "Human approval controls for high-risk IAM and privilege-escalation vulnerabilities",
+        ],
+        tech: ["LangGraph", "Claude 3.5 Sonnet", "Python", "Docker", "GitHub Actions"],
+      },
+      {
+        title: "MCP Chat – CLI Assistant & Protocol Integrator",
+        icon: Terminal,
+        description:
+          "Extensible command-line assistant that separates language-model orchestration from secure local tool execution through MCP.",
+        highlights: [
+          "Reduced developer context switching by 50%",
+          "Integrated local tools through the Model Context Protocol",
+          "Added dynamic @file references for targeted local context",
+          "Improved response accuracy with focused file ingestion",
+        ],
+        tech: ["Python", "MCP SDK", "Claude API", "prompt-toolkit"],
+      },
     ],
-    tech: ["Python", "MCP SDK", "Claude API", "prompt-toolkit"],
+  },
+  {
+    category: "Endpoint & ICS Defense",
+    icon: Cpu,
+    projects: [
+      {
+        title: "Mini Endpoint Detection & Response",
+        icon: Shield,
+        description:
+          "Lightweight endpoint monitoring solution improving visibility into system activity and detecting suspicious behavior.",
+        highlights: [
+          "Process monitoring functionality",
+          "Endpoint security event logging",
+          "Modular detection framework",
+          "Low-level systems programming in C++",
+        ],
+        tech: ["C++", "Windows API"],
+      },
+      {
+        title: "Secure ICS Telemetry & Detection Platform",
+        icon: Cpu,
+        description:
+          "Industrial control system security platform monitoring telemetry, validating communications, and detecting malicious activity in real time.",
+        highlights: [
+          "HMAC-based telemetry validation",
+          "Replay attack detection",
+          "Anomaly detection for operational monitoring",
+          "Zero Trust & Purdue Model principles",
+        ],
+        tech: ["Python", "Flask", "Streamlit", "Docker"],
+      },
+    ],
+  },
+  {
+    category: "Enterprise Infrastructure",
+    icon: Server,
+    projects: [
+      {
+        title: "Nutanix Enterprise Infrastructure Lab",
+        icon: Server,
+        description:
+          "Built and administered an enterprise virtualized environment supporting Windows infrastructure and Active Directory services.",
+        highlights: [
+          "Managed 2 Nutanix clusters & 7 VMs",
+          "Active Directory migration to Windows Server 2025",
+          "Configured WSUS & Windows Admin Center",
+          "PowerShell Remoting & virtualization best practices",
+        ],
+        tech: ["Nutanix AHV", "Active Directory", "Windows Server", "PowerShell"],
+      },
+    ],
   },
 ];
 
