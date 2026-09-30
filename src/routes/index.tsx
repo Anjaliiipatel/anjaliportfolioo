@@ -587,43 +587,59 @@ function Portfolio() {
 
       {/* PROJECTS */}
       <Section id="projects" label="02" title="Featured Projects">
-        <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((p, idx) => {
-            const Icon = p.icon;
+        <div className="space-y-12">
+          {projectSections.map((section) => {
+            const SectionIcon = section.icon;
             return (
-              <RevealCard key={p.title} delay={idx * 90}>
-              <article
-                className="group relative h-full p-6 rounded-xl border border-border bg-surface hover:border-primary/50 transition-all duration-300 shadow-card hover:-translate-y-1.5 hover:shadow-[0_20px_50px_-10px_oklch(0.82_0.17_175/0.25)]"
-              >
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
-                    <Icon className="w-5 h-5" />
-                  </div>
+              <div key={section.category}>
+                <div className="flex items-center gap-3 mb-5">
+                  <SectionIcon className="w-4 h-4 text-primary" />
+                  <h3 className="font-mono text-sm text-primary uppercase tracking-wider">
+                    {section.category}
+                  </h3>
+                  <div className="flex-1 h-px bg-border" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                  {p.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{p.description}</p>
-                <ul className="space-y-1.5 mb-5">
-                  {p.highlights.map((h) => (
-                    <li key={h} className="text-sm text-muted-foreground flex gap-2">
-                      <span className="text-primary font-mono mt-0.5">▸</span>
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-wrap gap-1.5">
-                  {p.tech.map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs font-mono px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border"
-                    >
-                      {t}
-                    </span>
-                  ))}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {section.projects.map((p, idx) => {
+                    const Icon = p.icon;
+                    return (
+                      <RevealCard key={p.title} delay={idx * 90}>
+                      <article
+                        className="group relative h-full p-6 rounded-xl border border-border bg-surface hover:border-primary/50 transition-all duration-300 shadow-card hover:-translate-y-1.5 hover:shadow-[0_20px_50px_-10px_oklch(0.82_0.17_175/0.25)]"
+                      >
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div className="w-11 h-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+                            <Icon className="w-5 h-5" />
+                          </div>
+                        </div>
+                        <h4 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                          {p.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">{p.description}</p>
+                        <ul className="space-y-1.5 mb-5">
+                          {p.highlights.map((h) => (
+                            <li key={h} className="text-sm text-muted-foreground flex gap-2">
+                              <span className="text-primary font-mono mt-0.5">▸</span>
+                              <span>{h}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex flex-wrap gap-1.5">
+                          {p.tech.map((t) => (
+                            <span
+                              key={t}
+                              className="text-xs font-mono px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                      </RevealCard>
+                    );
+                  })}
                 </div>
-              </article>
-              </RevealCard>
+              </div>
             );
           })}
         </div>
