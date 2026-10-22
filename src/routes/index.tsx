@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User, Cpu, Server, Bot } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User, Cpu, Server, Bot, FolderGit2, Star, Users } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import isc2Badge from "@/assets/isc2-badge.jpg.asset.json";
@@ -459,22 +459,6 @@ function Portfolio() {
             </div>
           </div>
 
-          {/* Current roles strip */}
-          <div className="mt-16 grid sm:grid-cols-2 gap-4">
-            {[
-               { label: "\n", value: "\n", sub: "\n" },
-            ].map((r, i) => (
-              <div
-                key={r.value}
-                className="p-5 rounded-lg border border-border bg-surface/60 backdrop-blur shadow-card hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
-                style={{ animation: `reveal-up 900ms ${520 + i * 120}ms cubic-bezier(0.22,1,0.36,1) both` }}
-              >
-                <div className="text-xs font-mono text-primary uppercase tracking-wider">{r.label}</div>
-                <div className="mt-1 text-lg font-semibold">{r.value}</div>
-                <div className="text-sm text-muted-foreground">{r.sub}</div>
-              </div>
-            ))}
-          </div>
           </div>
 
           {/* Headshot */}
