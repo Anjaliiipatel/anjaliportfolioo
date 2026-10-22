@@ -257,7 +257,7 @@ const experience = [
   {
     role: "Systems Security Engineering Intern",
     org: "Rolls-Royce",
-    period: "May 2026 – Present",
+    period: "May 2026 – Aug 2026",
     bullets: [
       "Develop security-focused solutions for industrial control systems",
       "Design telemetry monitoring and threat detection capabilities",
@@ -343,6 +343,7 @@ function Portfolio() {
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground font-mono">
             <a href="#about" className="hover:text-primary transition-colors">about</a>
             <a href="#projects" className="hover:text-primary transition-colors">projects</a>
+            <a href="#research" className="hover:text-primary transition-colors">research</a>
             <a href="#experience" className="hover:text-primary transition-colors">experience</a>
             <a href="#leadership" className="hover:text-primary transition-colors">leadership</a>
             <a href="#skills" className="hover:text-primary transition-colors">skills</a>
@@ -401,8 +402,6 @@ function Portfolio() {
             <span>B.S. Computer & Information Technology</span>
             <span className="text-border">/</span>
             <span>B.S. Digital Criminology</span>
-            <span className="text-border">/</span>
-            <span>{"\n"}</span>
           </div>
 
           <div
@@ -531,7 +530,6 @@ function Portfolio() {
               <div className="font-semibold">Purdue University</div>
               <div className="text-sm text-muted-foreground">B.S. Computer & Information Technology</div>
               <div className="text-sm text-muted-foreground">B.S. Digital Criminology</div>
-              <div className="text-sm text-muted-foreground">{"\n"}</div>
               <div className="text-xs font-mono text-primary mt-3">Expected May 2028</div>
             </div>
             <div className="p-5 rounded-lg border border-border bg-surface">
@@ -587,6 +585,7 @@ function Portfolio() {
 
       {/* PROJECTS */}
       <Section id="projects" label="02" title="Featured Projects">
+        <GitHubActivity />
         <div className="space-y-12">
           {projectSections.map((section) => {
             const SectionIcon = section.icon;
@@ -634,6 +633,18 @@ function Portfolio() {
                             </span>
                           ))}
                         </div>
+                        {p.repo && (
+                          <a
+                            href={`https://github.com/${GH_USER}/${p.repo}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={() => void trackEvent("project_repo_click", { project: p.title })}
+                            className="mt-5 inline-flex items-center gap-2 text-xs font-mono text-primary hover:underline underline-offset-4"
+                          >
+                            <Github className="w-3.5 h-3.5" /> View source
+                            <ArrowUpRight className="w-3 h-3" />
+                          </a>
+                        )}
                       </article>
                       </RevealCard>
                     );
@@ -645,8 +656,51 @@ function Portfolio() {
         </div>
       </Section>
 
+      {/* RESEARCH */}
+      <Section id="research" label="03" title="Research">
+        <div className="space-y-5">
+          {research.map((r) => (
+            <div
+              key={r.title}
+              className="p-6 rounded-xl border border-border bg-surface hover:border-primary/40 transition"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                <div className="min-w-0">
+                  <h3 className="text-lg font-semibold">{r.title}</h3>
+                  <div className="text-primary font-mono text-sm">{r.org}</div>
+                </div>
+                <span className="text-xs font-mono text-muted-foreground">{r.period}</span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">{r.summary}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                {r.focus.map((f) => (
+                  <span
+                    key={f}
+                    className="text-xs font-mono px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border"
+                  >
+                    {f}
+                  </span>
+                ))}
+                {r.repo && (
+                  <a
+                    href={`https://github.com/${GH_USER}/${r.repo}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => void trackEvent("project_repo_click", { project: r.title })}
+                    className="ml-auto inline-flex items-center gap-1.5 text-xs font-mono text-primary hover:underline underline-offset-4"
+                  >
+                    <Github className="w-3.5 h-3.5" /> Read the evaluation notes
+                    <ArrowUpRight className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* EXPERIENCE */}
-      <Section id="experience" label="03" title="Technical Experience">
+      <Section id="experience" label="04" title="Technical Experience">
         <div className="space-y-4">
           {experience.map((e) => (
             <div
@@ -674,7 +728,7 @@ function Portfolio() {
       </Section>
 
       {/* LEADERSHIP */}
-      <Section id="leadership" label="04" title="Leadership Experience">
+      <Section id="leadership" label="05" title="Leadership Experience">
         <div className="space-y-4">
           {leadership.map((e) => (
             <div
@@ -702,7 +756,7 @@ function Portfolio() {
       </Section>
 
       {/* SKILLS */}
-      <Section id="skills" label="05" title="Technical Skills">
+      <Section id="skills" label="06" title="Technical Skills">
         <div className="grid sm:grid-cols-2 gap-5">
           {Object.entries(skills).map(([category, items]) => (
             <div key={category} className="p-6 rounded-xl border border-border bg-surface">
@@ -725,7 +779,7 @@ function Portfolio() {
       </Section>
 
       {/* CONTACT */}
-      <Section id="contact" label="06" title="Let's Connect">
+      <Section id="contact" label="07" title="Let's Connect">
         <div className="rounded-2xl border border-border bg-surface p-10 md:p-14 text-center shadow-card relative overflow-hidden">
           <div className="absolute inset-0 bg-hero opacity-60 pointer-events-none" />
           <div className="relative">
