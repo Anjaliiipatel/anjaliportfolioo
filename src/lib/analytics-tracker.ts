@@ -196,7 +196,8 @@ export type TrackableEvent =
   | "resume_download"
   | "contact_email_click"
   | "contact_linkedin_click"
-  | "contact_github_click";
+  | "contact_github_click"
+  | "project_repo_click";
 
 export async function trackEvent(
   name: TrackableEvent,

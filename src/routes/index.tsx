@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User, Cpu, Server, Bot } from "lucide-react";
+import { Shield, Terminal, Github, Linkedin, Mail, MapPin, ExternalLink, Cloud, Lock, ArrowUpRight, FileText, LogIn, User, Cpu, Server, Bot, FolderGit2, Star, Users } from "lucide-react";
 import headshot from "@/assets/headshot.png.asset.json";
 import resumePdf from "@/assets/resume.pdf.asset.json";
 import isc2Badge from "@/assets/isc2-badge.jpg.asset.json";
@@ -65,7 +65,22 @@ export const Route = createFileRoute("/")({
 });
 
 
-const projectSections = [
+type Project = {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  highlights: string[];
+  tech: string[];
+  repo?: string;
+};
+
+type ProjectSection = {
+  category: string;
+  icon: React.ComponentType<{ className?: string }>;
+  projects: Project[];
+};
+
+const projectSections: ProjectSection[] = [
   {
     category: "Cloud Security",
     icon: Cloud,
@@ -82,6 +97,7 @@ const projectSections = [
           "Reduced SOC risk-prioritization latency by 40%",
         ],
         tech: ["AWS Lambda", "EventBridge", "Boto3", "Python", "MITRE ATT&CK"],
+        repo: "aws-cloud-guardrail",
       },
       {
         title: "Cloud Threat Hunting with MITRE ATT&CK",
@@ -95,6 +111,7 @@ const projectSections = [
           "Automated findings & investigation reports",
         ],
         tech: ["Python", "AWS CloudTrail", "MITRE ATT&CK", "Pandas"],
+        repo: "aws-cloudtrail",
       },
     ],
   },
@@ -127,6 +144,7 @@ const projectSections = [
           "Improved response accuracy with focused file ingestion",
         ],
         tech: ["Python", "MCP SDK", "Claude API", "prompt-toolkit"],
+        repo: "cli_project_COMPLETE",
       },
     ],
   },
@@ -146,6 +164,7 @@ const projectSections = [
           "Low-level systems programming in C++",
         ],
         tech: ["C++", "Windows API"],
+        repo: "Mini-EDR",
       },
       {
         title: "Secure ICS Telemetry & Detection Platform",
@@ -159,6 +178,7 @@ const projectSections = [
           "Zero Trust & Purdue Model principles",
         ],
         tech: ["Python", "Flask", "Streamlit", "Docker"],
+        repo: "secure-ics-system",
       },
     ],
   },
@@ -257,7 +277,7 @@ const experience = [
   {
     role: "Systems Security Engineering Intern",
     org: "Rolls-Royce",
-    period: "May 2026 – Present",
+    period: "May 2026 – Aug 2026",
     bullets: [
       "Develop security-focused solutions for industrial control systems",
       "Design telemetry monitoring and threat detection capabilities",
@@ -324,6 +344,227 @@ const leadership = [
   },
 ];
 
+type ResearchEntry = {
+  title: string;
+  org: string;
+  period: string;
+  summary: string;
+  focus: string[];
+  repo?: string;
+};
+
+const GH_USER = "Anjaliiipatel";
+
+const research: ResearchEntry[] = [
+  {
+    title: "Generative RF Environments for Cyber Deception",
+    org: "NSWC Crane Division / Purdue Applied Research Institute (PARI)",
+    period: "Aug 2025 – Jan 2026",
+    summary:
+      "Built a generative AI/ML pipeline that synthesizes realistic radio-frequency environments from Software Defined Radio captures, supporting cyber deception research alongside Purdue researchers and Department of Defense partners.",
+    focus: ["Generative Adversarial Networks", "Diffusion Models", "SDR Signal Analysis", "Cyber Deception"],
+  },
+  {
+    title: "LLM Security Evaluation & Adversarial Prompting",
+    org: "OpenAI Research Project",
+    period: "Feb 2026 – Mar 2026",
+    summary:
+      "Ran structured red-team style assessments against large language models, designing 50+ security-focused test cases that probe prompt injection, hallucination, and policy bypass behavior, then documented findings in structured security reports.",
+    focus: ["Prompt Injection", "Policy Bypass", "Model Safety Evaluation", "Adversarial Prompting"],
+    repo: "llm-prompt-evaluation",
+  },
+];
+
+type GhRepo = {
+  name: string;
+  html_url: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  pushed_at: string;
+};
+
+type GhStats = {
+  repos: number;
+  stars: number;
+  followers: number;
+  languages: { name: string; count: number }[];
+  recent: GhRepo[];
+};
+
+const GH_CACHE_KEY = "lovable_gh_stats_v1";
+const GH_CACHE_MS = 10 * 60 * 1000;
+
+function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const days = Math.floor((Date.now() - then) / 86400000);
+  if (days <= 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 30) return `${days}d ago`;
+  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
+  return `${Math.floor(days / 365)}y ago`;
+}
+
+async function loadGhStats(): Promise<GhStats> {
+  const headers = { Accept: "application/vnd.github+json" };
+  const [profileRes, reposRes] = await Promise.all([
+    fetch(`https://api.github.com/users/${GH_USER}`, { headers }),
+    fetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`, { headers }),
+  ]);
+  if (!profileRes.ok || !reposRes.ok) throw new Error("github_unavailable");
+
+  const profile = (await profileRes.json()) as { public_repos?: number; followers?: number };
+  const repos = (await reposRes.json()) as GhRepo[];
+
+  const counts = new Map<string, number>();
+  let stars = 0;
+  for (const r of repos) {
+    stars += r.stargazers_count ?? 0;
+    if (r.language) counts.set(r.language, (counts.get(r.language) ?? 0) + 1);
+  }
+
+  return {
+    repos: profile.public_repos ?? repos.length,
+    stars,
+    followers: profile.followers ?? 0,
+    languages: [...counts.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 4),
+    recent: repos
+      .filter((r) => !/portfolio/i.test(r.name) && !/^professional-documents/i.test(r.name))
+      .slice(0, 6),
+  };
+}
+
+function GitHubActivity() {
+  const [stats, setStats] = useState<GhStats | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    try {
+      const raw = window.sessionStorage.getItem(GH_CACHE_KEY);
+      if (raw) {
+        const cached = JSON.parse(raw) as { at: number; data: GhStats };
+        if (Date.now() - cached.at < GH_CACHE_MS) {
+          setStats(cached.data);
+          return;
+        }
+      }
+    } catch {
+      /* cache miss */
+    }
+
+    loadGhStats()
+      .then((data) => {
+        if (!alive) return;
+        setStats(data);
+        try {
+          window.sessionStorage.setItem(GH_CACHE_KEY, JSON.stringify({ at: Date.now(), data }));
+        } catch {
+          /* storage unavailable */
+        }
+      })
+      .catch(() => {
+        if (alive) setFailed(true);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (failed) return null;
+
+  return (
+    <div className="mb-12 rounded-xl border border-border bg-surface/60 backdrop-blur p-6 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary">
+          <FolderGit2 className="w-4 h-4" />
+          <span>live from github</span>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+        </div>
+        <a
+          href={`https://github.com/${GH_USER}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => void trackEvent("project_repo_click", { project: "profile" })}
+          className="font-mono text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          @{GH_USER}
+        </a>
+      </div>
+
+      {!stats ? (
+        <div className="grid sm:grid-cols-3 gap-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-20 rounded-lg border border-border bg-background/40 animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[
+              { key: "repos", icon: FolderGit2, value: stats.repos, label: "public repos" },
+              { key: "stars", icon: Star, value: stats.stars, label: "stars" },
+              { key: "followers", icon: Users, value: stats.followers, label: "followers" },
+            ].map((s) => (
+              <div key={s.key} className="p-4 rounded-lg border border-border bg-background/40">
+                <div className="flex items-center gap-2 text-primary">
+                  <s.icon className="w-4 h-4" />
+                  <span className="text-xl font-semibold text-foreground">{s.value}</span>
+                </div>
+                <div className="mt-1 font-mono text-xs text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {stats.languages.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="font-mono text-xs text-muted-foreground">languages</span>
+              {stats.languages.map((l) => (
+                <span
+                  key={l.name}
+                  className="text-xs font-mono px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border"
+                >
+                  {l.name} <span className="text-primary">{l.count}</span>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {stats.recent.map((r) => (
+              <a
+                key={r.name}
+                href={r.html_url}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => void trackEvent("project_repo_click", { project: r.name })}
+                className="group p-4 rounded-lg border border-border bg-background/40 hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-sm truncate group-hover:text-primary transition-colors">{r.name}</span>
+                  <Star className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                </div>
+                <p className="mt-2 line-clamp-2 min-h-[2rem] text-xs text-muted-foreground leading-relaxed">
+                  {r.description || "—"}
+                </p>
+                <div className="mt-2 flex items-center gap-3 font-mono text-xs text-muted-foreground">
+                  {r.language && <span className="text-primary">{r.language}</span>}
+                  <span>{timeAgo(r.pushed_at)}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function Portfolio() {
   const [showGate, setShowGate] = useState(true);
   if (showGate) return <VisitorGate onContinue={() => setShowGate(false)} />;
@@ -343,6 +584,7 @@ function Portfolio() {
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground font-mono">
             <a href="#about" className="hover:text-primary transition-colors">about</a>
             <a href="#projects" className="hover:text-primary transition-colors">projects</a>
+            <a href="#research" className="hover:text-primary transition-colors">research</a>
             <a href="#experience" className="hover:text-primary transition-colors">experience</a>
             <a href="#leadership" className="hover:text-primary transition-colors">leadership</a>
             <a href="#skills" className="hover:text-primary transition-colors">skills</a>
@@ -401,8 +643,6 @@ function Portfolio() {
             <span>B.S. Computer & Information Technology</span>
             <span className="text-border">/</span>
             <span>B.S. Digital Criminology</span>
-            <span className="text-border">/</span>
-            <span>{"\n"}</span>
           </div>
 
           <div
@@ -455,22 +695,6 @@ function Portfolio() {
             </div>
           </div>
 
-          {/* Current roles strip */}
-          <div className="mt-16 grid sm:grid-cols-2 gap-4">
-            {[
-               { label: "\n", value: "\n", sub: "\n" },
-            ].map((r, i) => (
-              <div
-                key={r.value}
-                className="p-5 rounded-lg border border-border bg-surface/60 backdrop-blur shadow-card hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
-                style={{ animation: `reveal-up 900ms ${520 + i * 120}ms cubic-bezier(0.22,1,0.36,1) both` }}
-              >
-                <div className="text-xs font-mono text-primary uppercase tracking-wider">{r.label}</div>
-                <div className="mt-1 text-lg font-semibold">{r.value}</div>
-                <div className="text-sm text-muted-foreground">{r.sub}</div>
-              </div>
-            ))}
-          </div>
           </div>
 
           {/* Headshot */}
@@ -531,7 +755,6 @@ function Portfolio() {
               <div className="font-semibold">Purdue University</div>
               <div className="text-sm text-muted-foreground">B.S. Computer & Information Technology</div>
               <div className="text-sm text-muted-foreground">B.S. Digital Criminology</div>
-              <div className="text-sm text-muted-foreground">{"\n"}</div>
               <div className="text-xs font-mono text-primary mt-3">Expected May 2028</div>
             </div>
             <div className="p-5 rounded-lg border border-border bg-surface">
@@ -587,6 +810,7 @@ function Portfolio() {
 
       {/* PROJECTS */}
       <Section id="projects" label="02" title="Featured Projects">
+        <GitHubActivity />
         <div className="space-y-12">
           {projectSections.map((section) => {
             const SectionIcon = section.icon;
@@ -634,6 +858,18 @@ function Portfolio() {
                             </span>
                           ))}
                         </div>
+                        {p.repo && (
+                          <a
+                            href={`https://github.com/${GH_USER}/${p.repo}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={() => void trackEvent("project_repo_click", { project: p.title })}
+                            className="mt-5 inline-flex items-center gap-2 text-xs font-mono text-primary hover:underline underline-offset-4"
+                          >
+                            <Github className="w-3.5 h-3.5" /> View source
+                            <ArrowUpRight className="w-3 h-3" />
+                          </a>
+                        )}
                       </article>
                       </RevealCard>
                     );
@@ -645,8 +881,51 @@ function Portfolio() {
         </div>
       </Section>
 
+      {/* RESEARCH */}
+      <Section id="research" label="03" title="Research">
+        <div className="space-y-5">
+          {research.map((r) => (
+            <div
+              key={r.title}
+              className="p-6 rounded-xl border border-border bg-surface hover:border-primary/40 transition"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                <div className="min-w-0">
+                  <h3 className="text-lg font-semibold">{r.title}</h3>
+                  <div className="text-primary font-mono text-sm">{r.org}</div>
+                </div>
+                <span className="text-xs font-mono text-muted-foreground">{r.period}</span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">{r.summary}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                {r.focus.map((f) => (
+                  <span
+                    key={f}
+                    className="text-xs font-mono px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border"
+                  >
+                    {f}
+                  </span>
+                ))}
+                {r.repo && (
+                  <a
+                    href={`https://github.com/${GH_USER}/${r.repo}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => void trackEvent("project_repo_click", { project: r.title })}
+                    className="ml-auto inline-flex items-center gap-1.5 text-xs font-mono text-primary hover:underline underline-offset-4"
+                  >
+                    <Github className="w-3.5 h-3.5" /> Read the evaluation notes
+                    <ArrowUpRight className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* EXPERIENCE */}
-      <Section id="experience" label="03" title="Technical Experience">
+      <Section id="experience" label="04" title="Technical Experience">
         <div className="space-y-4">
           {experience.map((e) => (
             <div
@@ -674,7 +953,7 @@ function Portfolio() {
       </Section>
 
       {/* LEADERSHIP */}
-      <Section id="leadership" label="04" title="Leadership Experience">
+      <Section id="leadership" label="05" title="Leadership Experience">
         <div className="space-y-4">
           {leadership.map((e) => (
             <div
@@ -702,7 +981,7 @@ function Portfolio() {
       </Section>
 
       {/* SKILLS */}
-      <Section id="skills" label="05" title="Technical Skills">
+      <Section id="skills" label="06" title="Technical Skills">
         <div className="grid sm:grid-cols-2 gap-5">
           {Object.entries(skills).map(([category, items]) => (
             <div key={category} className="p-6 rounded-xl border border-border bg-surface">
@@ -725,7 +1004,7 @@ function Portfolio() {
       </Section>
 
       {/* CONTACT */}
-      <Section id="contact" label="06" title="Let's Connect">
+      <Section id="contact" label="07" title="Let's Connect">
         <div className="rounded-2xl border border-border bg-surface p-10 md:p-14 text-center shadow-card relative overflow-hidden">
           <div className="absolute inset-0 bg-hero opacity-60 pointer-events-none" />
           <div className="relative">
