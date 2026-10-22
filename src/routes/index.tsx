@@ -65,7 +65,22 @@ export const Route = createFileRoute("/")({
 });
 
 
-const projectSections = [
+type Project = {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  highlights: string[];
+  tech: string[];
+  repo?: string;
+};
+
+type ProjectSection = {
+  category: string;
+  icon: React.ComponentType<{ className?: string }>;
+  projects: Project[];
+};
+
+const projectSections: ProjectSection[] = [
   {
     category: "Cloud Security",
     icon: Cloud,
@@ -328,6 +343,227 @@ const leadership = [
     ],
   },
 ];
+
+type ResearchEntry = {
+  title: string;
+  org: string;
+  period: string;
+  summary: string;
+  focus: string[];
+  repo?: string;
+};
+
+const GH_USER = "Anjaliiipatel";
+
+const research: ResearchEntry[] = [
+  {
+    title: "Generative RF Environments for Cyber Deception",
+    org: "NSWC Crane Division / Purdue Applied Research Institute (PARI)",
+    period: "Aug 2025 – Jan 2026",
+    summary:
+      "Built a generative AI/ML pipeline that synthesizes realistic radio-frequency environments from Software Defined Radio captures, supporting cyber deception research alongside Purdue researchers and Department of Defense partners.",
+    focus: ["Generative Adversarial Networks", "Diffusion Models", "SDR Signal Analysis", "Cyber Deception"],
+  },
+  {
+    title: "LLM Security Evaluation & Adversarial Prompting",
+    org: "OpenAI Research Project",
+    period: "Feb 2026 – Mar 2026",
+    summary:
+      "Ran structured red-team style assessments against large language models, designing 50+ security-focused test cases that probe prompt injection, hallucination, and policy bypass behavior, then documented findings in structured security reports.",
+    focus: ["Prompt Injection", "Policy Bypass", "Model Safety Evaluation", "Adversarial Prompting"],
+    repo: "llm-prompt-evaluation",
+  },
+];
+
+type GhRepo = {
+  name: string;
+  html_url: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  pushed_at: string;
+};
+
+type GhStats = {
+  repos: number;
+  stars: number;
+  followers: number;
+  languages: { name: string; count: number }[];
+  recent: GhRepo[];
+};
+
+const GH_CACHE_KEY = "lovable_gh_stats_v1";
+const GH_CACHE_MS = 10 * 60 * 1000;
+
+function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const days = Math.floor((Date.now() - then) / 86400000);
+  if (days <= 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 30) return `${days}d ago`;
+  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
+  return `${Math.floor(days / 365)}y ago`;
+}
+
+async function loadGhStats(): Promise<GhStats> {
+  const headers = { Accept: "application/vnd.github+json" };
+  const [profileRes, reposRes] = await Promise.all([
+    fetch(`https://api.github.com/users/${GH_USER}`, { headers }),
+    fetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`, { headers }),
+  ]);
+  if (!profileRes.ok || !reposRes.ok) throw new Error("github_unavailable");
+
+  const profile = (await profileRes.json()) as { public_repos?: number; followers?: number };
+  const repos = (await reposRes.json()) as GhRepo[];
+
+  const counts = new Map<string, number>();
+  let stars = 0;
+  for (const r of repos) {
+    stars += r.stargazers_count ?? 0;
+    if (r.language) counts.set(r.language, (counts.get(r.language) ?? 0) + 1);
+  }
+
+  return {
+    repos: profile.public_repos ?? repos.length,
+    stars,
+    followers: profile.followers ?? 0,
+    languages: [...counts.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 4),
+    recent: repos
+      .filter((r) => !/portfolio/i.test(r.name) && !/^professional-documents/i.test(r.name))
+      .slice(0, 6),
+  };
+}
+
+function GitHubActivity() {
+  const [stats, setStats] = useState<GhStats | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    try {
+      const raw = window.sessionStorage.getItem(GH_CACHE_KEY);
+      if (raw) {
+        const cached = JSON.parse(raw) as { at: number; data: GhStats };
+        if (Date.now() - cached.at < GH_CACHE_MS) {
+          setStats(cached.data);
+          return;
+        }
+      }
+    } catch {
+      /* cache miss */
+    }
+
+    loadGhStats()
+      .then((data) => {
+        if (!alive) return;
+        setStats(data);
+        try {
+          window.sessionStorage.setItem(GH_CACHE_KEY, JSON.stringify({ at: Date.now(), data }));
+        } catch {
+          /* storage unavailable */
+        }
+      })
+      .catch(() => {
+        if (alive) setFailed(true);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (failed) return null;
+
+  return (
+    <div className="mb-12 rounded-xl border border-border bg-surface/60 backdrop-blur p-6 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary">
+          <FolderGit2 className="w-4 h-4" />
+          <span>live from github</span>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+        </div>
+        <a
+          href={`https://github.com/${GH_USER}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => void trackEvent("project_repo_click", { project: "profile" })}
+          className="font-mono text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          @{GH_USER}
+        </a>
+      </div>
+
+      {!stats ? (
+        <div className="grid sm:grid-cols-3 gap-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-20 rounded-lg border border-border bg-background/40 animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[
+              { key: "repos", icon: FolderGit2, value: stats.repos, label: "public repos" },
+              { key: "stars", icon: Star, value: stats.stars, label: "stars" },
+              { key: "followers", icon: Users, value: stats.followers, label: "followers" },
+            ].map((s) => (
+              <div key={s.key} className="p-4 rounded-lg border border-border bg-background/40">
+                <div className="flex items-center gap-2 text-primary">
+                  <s.icon className="w-4 h-4" />
+                  <span className="text-xl font-semibold text-foreground">{s.value}</span>
+                </div>
+                <div className="mt-1 font-mono text-xs text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {stats.languages.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="font-mono text-xs text-muted-foreground">languages</span>
+              {stats.languages.map((l) => (
+                <span
+                  key={l.name}
+                  className="text-xs font-mono px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border"
+                >
+                  {l.name} <span className="text-primary">{l.count}</span>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {stats.recent.map((r) => (
+              <a
+                key={r.name}
+                href={r.html_url}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => void trackEvent("project_repo_click", { project: r.name })}
+                className="group p-4 rounded-lg border border-border bg-background/40 hover:border-primary/50 hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-sm truncate group-hover:text-primary transition-colors">{r.name}</span>
+                  <Star className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                </div>
+                <p className="mt-2 line-clamp-2 min-h-[2rem] text-xs text-muted-foreground leading-relaxed">
+                  {r.description || "—"}
+                </p>
+                <div className="mt-2 flex items-center gap-3 font-mono text-xs text-muted-foreground">
+                  {r.language && <span className="text-primary">{r.language}</span>}
+                  <span>{timeAgo(r.pushed_at)}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 function Portfolio() {
   const [showGate, setShowGate] = useState(true);
